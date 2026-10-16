@@ -1,0 +1,13 @@
+<h1>Bonjour {{ auth.currentUser()?.firstname }}</h1>
+<p class="muted">Bienvenue sur Sideral.</p>
+
+<div class="features">
+  @for (feature of features; track feature.title) {
+    <div class="card feature">
+      <span class="icon">{{ feature.icon }}</span>
+      <h3>{{ feature.title }}</h3>
+      <p class="muted">{{ feature.description }}</p>
+      <span class="badge badge-muted">Bientôt disponible</span>
+    </div>
+  }
+</div>

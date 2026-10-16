@@ -1,0 +1,28 @@
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: linear-gradient(135deg, var(--sd-primary-soft), var(--sd-bg));
+}
+
+.login-card {
+  width: 100%;
+  max-width: 380px;
+  padding: 2rem;
+
+  .brand {
+    color: var(--sd-primary);
+    font-size: 1.75rem;
+    margin-bottom: 0.25rem;
+  }
+
+  p {
+    margin: 0 0 1.5rem;
+  }
+}
+
+.submit {
+  width: 100%;
+  margin-top: 0.5rem;
+}

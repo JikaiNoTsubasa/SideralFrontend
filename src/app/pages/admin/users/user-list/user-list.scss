@@ -1,0 +1,53 @@
+.search {
+  max-width: 360px;
+  margin-bottom: 1rem;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: 0.7rem 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--sd-border);
+    vertical-align: middle;
+  }
+
+  th {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--sd-text-muted);
+  }
+
+  tbody tr:hover {
+    background: var(--sd-bg);
+  }
+}
+
+.small {
+  font-size: 0.8rem;
+}
+
+.empty {
+  text-align: center;
+  padding: 2rem;
+}
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+
+  .actions {
+    align-items: center;
+  }
+}

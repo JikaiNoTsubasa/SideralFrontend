@@ -1,0 +1,31 @@
+<header class="navbar">
+  <div class="navbar-inner">
+    <a routerLink="/" class="brand">Sideral</a>
+
+    <nav class="links">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Accueil</a>
+      @if (auth.isAdmin()) {
+        <a routerLink="/admin/users" routerLinkActive="active">Utilisateurs</a>
+      }
+    </nav>
+
+    @if (auth.currentUser(); as user) {
+      <div class="profile">
+        <button type="button" class="profile-toggle" (click)="toggleMenu($event)">
+          <span class="avatar">{{ initials() }}</span>
+          <span class="name">{{ user.firstname }} {{ user.lastname }}</span>
+        </button>
+        @if (menuOpen()) {
+          <div class="menu">
+            <a routerLink="/profile" (click)="closeMenu()">Mon profil</a>
+            <button type="button" (click)="logout()">Déconnexion</button>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</header>
+
+<main class="content">
+  <router-outlet />
+</main>

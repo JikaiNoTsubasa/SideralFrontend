@@ -1,0 +1,80 @@
+<div class="page-header">
+  <h1>{{ isEdit() ? "Modifier l'utilisateur" : 'Nouvel utilisateur' }}</h1>
+</div>
+
+<form class="card" [formGroup]="form" (ngSubmit)="submit()">
+  @if (error()) {
+    <div class="alert alert-error">{{ error() }}</div>
+  }
+
+  <div class="form-row">
+    <div class="form-field">
+      <label for="firstname">Prénom</label>
+      <input id="firstname" type="text" formControlName="firstname" />
+    </div>
+    <div class="form-field">
+      <label for="lastname">Nom</label>
+      <input id="lastname" type="text" formControlName="lastname" />
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-field">
+      <label for="login">Identifiant</label>
+      <input id="login" type="text" formControlName="login" autocomplete="off" />
+    </div>
+    <div class="form-field">
+      <label for="email">Email</label>
+      <input id="email" type="email" formControlName="email" />
+      @if (form.controls.email.touched && form.controls.email.invalid) {
+        <span class="hint-error">Email invalide.</span>
+      }
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-field">
+      <label for="jobTitle">Poste</label>
+      <input id="jobTitle" type="text" formControlName="jobTitle" />
+    </div>
+    @if (!isEdit()) {
+      <div class="form-field">
+        <label for="password">Mot de passe initial</label>
+        <input id="password" type="password" formControlName="password" autocomplete="new-password" />
+        @if (form.controls.password.touched && form.controls.password.hasError('minlength')) {
+          <span class="hint-error">{{ passwordMinLength }} caractères minimum.</span>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="form-field">
+    <label>Rôles</label>
+    <div>
+      @for (role of roles(); track role.key) {
+        <label class="checkbox">
+          <input
+            type="checkbox"
+            [checked]="selectedRoles().has(role.key)"
+            (change)="toggleRole(role.key, $any($event.target).checked)"
+          />
+          {{ role.name }}
+        </label>
+      }
+    </div>
+  </div>
+
+  @if (isEdit()) {
+    <div class="form-field">
+      <label class="checkbox">
+        <input type="checkbox" formControlName="isActive" />
+        Compte actif
+      </label>
+    </div>
+  }
+
+  <div class="actions">
+    <a routerLink="/admin/users" class="btn">Annuler</a>
+    <button type="submit" class="btn btn-primary" [disabled]="saving()">Enregistrer</button>
+  </div>
+</form>

@@ -1,0 +1,82 @@
+<div class="page-header">
+  <h1>Utilisateurs</h1>
+  <a routerLink="new" class="btn btn-primary">+ Nouvel utilisateur</a>
+</div>
+
+<div class="card">
+  <input
+    type="search"
+    class="search"
+    placeholder="Rechercher (nom, identifiant, email)…"
+    [(ngModel)]="search"
+    (ngModelChange)="onSearch($event)"
+  />
+
+  @if (error()) {
+    <div class="alert alert-error">{{ error() }}</div>
+  }
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Identifiant</th>
+          <th>Email</th>
+          <th>Rôles</th>
+          <th>Statut</th>
+          <th>Dernière connexion</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (user of result()?.items; track user.id) {
+          <tr>
+            <td>
+              <strong>{{ user.firstname }} {{ user.lastname }}</strong>
+              @if (user.jobTitle) {
+                <div class="muted small">{{ user.jobTitle }}</div>
+              }
+            </td>
+            <td>{{ user.login }}</td>
+            <td>{{ user.email }}</td>
+            <td>
+              @for (role of user.roles; track role) {
+                <span class="badge">{{ role }}</span>
+              }
+            </td>
+            <td>
+              <span class="badge" [class.badge-muted]="!user.isActive">{{ user.isActive ? 'Actif' : 'Inactif' }}</span>
+            </td>
+            <td class="muted">{{ user.lastLoginOn ? (user.lastLoginOn | date: 'dd/MM/yyyy HH:mm') : '—' }}</td>
+            <td>
+              <div class="actions">
+                <a [routerLink]="[user.id]" class="btn btn-sm">Modifier</a>
+                @if (user.id !== auth.currentUser()?.id) {
+                  <button type="button" class="btn btn-sm btn-danger" (click)="remove(user)">Supprimer</button>
+                }
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="7" class="muted empty">{{ loading() ? 'Chargement…' : 'Aucun utilisateur.' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (result(); as res) {
+    <div class="pagination">
+      <span class="muted">{{ res.total }} utilisateur(s)</span>
+      <div class="actions">
+        <button type="button" class="btn btn-sm" [disabled]="page() <= 1" (click)="goTo(page() - 1)">Précédent</button>
+        <span>Page {{ page() }} / {{ res.pageCount }}</span>
+        <button type="button" class="btn btn-sm" [disabled]="page() >= res.pageCount" (click)="goTo(page() + 1)">
+          Suivant
+        </button>
+      </div>
+    </div>
+  }
+</div>

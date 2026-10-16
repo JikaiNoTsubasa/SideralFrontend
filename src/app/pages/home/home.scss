@@ -1,0 +1,16 @@
+.features {
+  margin-top: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+
+.feature {
+  .icon {
+    font-size: 1.75rem;
+  }
+
+  h3 {
+    margin-top: 0.75rem;
+  }
+}
