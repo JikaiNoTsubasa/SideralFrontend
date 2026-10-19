@@ -117,6 +117,7 @@ input[type='text'],
 input[type='email'],
 input[type='password'],
 input[type='search'],
+select,
 textarea {
   width: 100%;
   padding: 0.55rem 0.75rem;
@@ -210,4 +211,191 @@ textarea {
   resize: vertical;
   min-height: 2.5rem;
   line-height: 1.5;
+}
+
+select {
+  width: auto;
+  padding-right: 2rem;
+}
+
+.small {
+  font-size: 0.8rem;
+}
+
+// Tableau de données (listes)
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: 0.6rem 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--sd-border);
+    vertical-align: middle;
+  }
+
+  th {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--sd-text-muted);
+    white-space: nowrap;
+  }
+
+  tbody tr:hover {
+    background: var(--sd-bg);
+  }
+
+  .empty {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: var(--sd-text-muted);
+  }
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+// Fil d'Ariane
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 1.25rem;
+  font-weight: 600;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-width: 0;
+
+    & + li::before {
+      content: '›';
+      color: var(--sd-text-muted);
+      font-weight: 400;
+      margin-right: 0.15rem;
+    }
+  }
+
+  a {
+    color: var(--sd-text-muted);
+    border-radius: 6px;
+    padding: 0.1rem 0.3rem;
+
+    &:hover {
+      color: var(--sd-primary);
+      background: var(--sd-primary-soft);
+    }
+  }
+
+  span {
+    padding: 0.1rem 0.3rem;
+    overflow-wrap: anywhere;
+  }
+}
+
+// Menu contextuel (actions d'une ligne)
+.popover-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.25rem);
+  z-index: 6;
+  min-width: 190px;
+  display: flex;
+  flex-direction: column;
+  padding: 0.35rem;
+  background: var(--sd-surface);
+  border: 1px solid var(--sd-border);
+  border-radius: var(--sd-radius);
+  box-shadow: var(--sd-shadow-lg);
+
+  button,
+  a {
+    padding: 0.5rem 0.7rem;
+    border: none;
+    border-radius: 6px;
+    background: none;
+    color: var(--sd-text);
+    font: inherit;
+    font-size: 0.9rem;
+    text-align: left;
+    cursor: pointer;
+    white-space: nowrap;
+
+    &:hover {
+      background: var(--sd-bg);
+    }
+
+    &.danger {
+      color: var(--sd-danger);
+    }
+  }
+
+  hr {
+    width: 100%;
+    margin: 0.25rem 0;
+    border: none;
+    border-top: 1px solid var(--sd-border);
+  }
+}
+
+.badge.badge-warning {
+  background: var(--sd-warning-soft);
+  color: var(--sd-warning);
+}
+
+// Nom d'élément avec icône (listes de la GED)
+.item-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--sd-text);
+  overflow-wrap: anywhere;
+}
+
+.search {
+  max-width: 360px;
+  margin-bottom: 1rem;
+}
+
+.pager {
+  align-items: center;
+  margin-top: 1rem;
+}
+
+// Infobulle : <span [attr.data-tooltip]="texte"> (retours à la ligne avec \n), affichée au survol, au-dessus de l'élément
+[data-tooltip] {
+  position: relative;
+
+  &:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    z-index: 15;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: 280px;
+    padding: 0.4rem 0.6rem;
+    border-radius: 6px;
+    background: var(--sd-text);
+    color: var(--sd-surface);
+    box-shadow: var(--sd-shadow-lg);
+    font-size: 0.78rem;
+    font-weight: 500;
+    line-height: 1.4;
+    text-align: center;
+    text-transform: none;
+    letter-spacing: normal;
+    white-space: pre-line;
+    pointer-events: none;
+  }
 }

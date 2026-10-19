@@ -1,0 +1,133 @@
+.page-header {
+  align-items: flex-start;
+}
+
+.list {
+  padding: 1rem 1.25rem;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+
+  input {
+    max-width: 320px;
+  }
+}
+
+.sort {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-transform: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--sd-primary);
+  }
+}
+
+tbody tr {
+  cursor: default;
+  user-select: none;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  color: var(--sd-text);
+  min-width: 0;
+
+  &:hover .item-name {
+    color: var(--sd-primary);
+  }
+}
+
+.item-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.15rem 0.5rem;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.description {
+  flex-basis: 100%;
+  font-weight: 400;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 480px;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.row-actions {
+  width: 1%;
+}
+
+.menu-anchor {
+  position: relative;
+}
+
+// Le tableau défile horizontalement (overflow) : le menu est positionné par rapport à l'écran pour ne pas être rogné
+.popover-menu.fixed {
+  position: fixed;
+  z-index: 20;
+}
+
+.uploads {
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.uploads-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.upload {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.4rem 0;
+}
+
+.upload-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.upload-name {
+  font-size: 0.9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+progress {
+  width: 100%;
+  height: 6px;
+  accent-color: var(--sd-primary);
+}
+
+.hint-error {
+  color: var(--sd-danger);
+}
+
+.lock {
+  margin-right: 0;
+  cursor: help;
+}

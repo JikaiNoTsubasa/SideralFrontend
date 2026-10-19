@@ -21,6 +21,12 @@ export class UserService {
       .pipe(map((res) => toPaged(res, page)));
   }
 
+  /** Identifiant qui sera attribué à la création (3 lettres, unique). */
+  loginSuggestion(firstname: string, lastname: string): Observable<string> {
+    const params = new HttpParams().set('firstname', firstname).set('lastname', lastname);
+    return this.http.get<{ login: string }>(`${this.url}/login-suggestion`, { params }).pipe(map((res) => res.login));
+  }
+
   get(id: number): Observable<UserDto> {
     return this.http.get<UserDto>(`${this.url}/${id}`);
   }

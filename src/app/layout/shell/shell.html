@@ -4,8 +4,10 @@
 
     <nav class="links">
       <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Accueil</a>
+      <a routerLink="/documents" routerLinkActive="active">Documents</a>
       @if (auth.isAdmin()) {
         <a routerLink="/admin/users" routerLinkActive="active">Utilisateurs</a>
+        <a routerLink="/admin/groups" routerLinkActive="active">Groupes</a>
       }
     </nav>
 

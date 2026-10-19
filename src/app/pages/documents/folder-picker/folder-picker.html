@@ -1,0 +1,41 @@
+<sd-modal [title]="title()" (closed)="closed.emit()">
+  @if (error()) {
+    <div class="alert alert-error">{{ error() }}</div>
+  }
+
+  @if (content(); as c) {
+    <div class="location">
+      @if (c.folder) {
+        <button type="button" class="btn btn-sm" (click)="open(parentId(c))" aria-label="Dossier parent">↑</button>
+        <strong>{{ c.folder.name }}</strong>
+      } @else {
+        <strong>Documents</strong>
+      }
+    </div>
+
+    <ul class="folders">
+      @for (f of c.folders; track f.id) {
+        @if (f.id !== hiddenFolderId()) {
+          <li>
+            <button type="button" (click)="open(f.id)">
+              <sd-file-icon [folder]="true" />
+              <span>{{ f.name }}</span>
+            </button>
+          </li>
+        }
+      } @empty {
+        <li class="muted empty">Aucun sous-dossier.</li>
+      }
+    </ul>
+
+    <div class="actions">
+      <button type="button" class="btn" (click)="closed.emit()">Annuler</button>
+      <button type="button" class="btn btn-primary" [disabled]="!canPick(c)" (click)="picked.emit(c.folder?.id ?? null)">
+        Déplacer ici
+      </button>
+    </div>
+    @if (!canPick(c)) {
+      <p class="muted small hint">Vous n'avez pas les droits suffisants sur ce dossier pour y déplacer l'élément.</p>
+    }
+  }
+</sd-modal>

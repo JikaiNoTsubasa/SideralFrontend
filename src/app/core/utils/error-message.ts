@@ -7,6 +7,9 @@ export function errorMessage(error: unknown, fallback = 'Une erreur inattendue e
     if (error.status === 0) {
       return 'Impossible de joindre le serveur.';
     }
+    if (error.status === 413) {
+      return 'Le fichier est trop volumineux.';
+    }
     const problem = error.error as ProblemDetails | null;
     if (problem && typeof problem === 'object') {
       return problem.detail || problem.title || fallback;

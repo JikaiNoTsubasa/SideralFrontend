@@ -1,0 +1,251 @@
+<div class="page-header">
+  <ol class="breadcrumb">
+    <li>
+      @if (content()?.folder) {
+        <a routerLink="/documents">Documents</a>
+      } @else {
+        <span>Documents</span>
+      }
+    </li>
+    @if (content(); as c) {
+      @for (crumb of c.breadcrumb; track crumb.id; let last = $last) {
+        <li>
+          @if (last) {
+            <span>{{ crumb.name }}</span>
+          } @else {
+            <a [routerLink]="['/documents/folder', crumb.id]">{{ crumb.name }}</a>
+          }
+        </li>
+      }
+    }
+  </ol>
+
+  @if (content(); as c) {
+    <div class="actions">
+      @if (c.folder) {
+        <button type="button" class="btn" (click)="dialog.set({ kind: 'activity' })">Activité</button>
+        <button type="button" class="btn" (click)="dialog.set({ kind: 'permissions', folderId: c.folder.id, folderName: c.folder.name })">
+          Droits
+        </button>
+      }
+      @if (c.canCreateFolder) {
+        <button type="button" class="btn" (click)="newFolder()">+ Nouveau dossier</button>
+      }
+      @if (c.canUpload) {
+        <label class="btn btn-primary">
+          Importer des fichiers
+          <input #fileInput type="file" multiple hidden (change)="onFiles(fileInput)" />
+        </label>
+      }
+    </div>
+  }
+</div>
+
+@if (error()) {
+  <div class="alert alert-error">{{ error() }}</div>
+}
+@if (actionError()) {
+  <div class="alert alert-error">{{ actionError() }}</div>
+}
+
+@if (uploads().length) {
+  <div class="card uploads">
+    <div class="uploads-header">
+      <strong>Import de fichiers</strong>
+      @if (!activeUploads()) {
+        <button type="button" class="btn btn-sm" (click)="clearUploads()">Effacer</button>
+      }
+    </div>
+    @for (u of uploads(); track u.id) {
+      <div class="upload">
+        <sd-file-icon [name]="u.name" />
+        <div class="upload-body">
+          <div class="upload-name">{{ u.name }}</div>
+          @if (u.error) {
+            <div class="hint-error small">{{ u.error }}</div>
+          } @else {
+            <progress max="100" [value]="u.progress"></progress>
+          }
+        </div>
+        <span class="small" [class.muted]="!u.done">{{ u.error ? 'Échec' : u.done ? 'Terminé' : u.progress + ' %' }}</span>
+      </div>
+    }
+  </div>
+}
+
+@if (content(); as c) {
+  <div class="card list">
+    <div class="toolbar">
+      <input type="search" placeholder="Filtrer ce dossier…" [ngModel]="filter()" (ngModelChange)="filter.set($event)" />
+      @if (c.folder) {
+        <span class="muted small">Votre accès : {{ levelLabel(c.myLevel) }}</span>
+      }
+    </div>
+
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th><button type="button" class="sort" (click)="sortBy('name')">Nom {{ sortIndicator('name') }}</button></th>
+            <th>Version</th>
+            <th><button type="button" class="sort" (click)="sortBy('updated')">Modifié {{ sortIndicator('updated') }}</button></th>
+            <th><button type="button" class="sort" (click)="sortBy('size')">Taille {{ sortIndicator('size') }}</button></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (f of folders(); track f.id) {
+            <tr (dblclick)="router.navigate(['/documents/folder', f.id])">
+              <td>
+                <a class="item" [routerLink]="['/documents/folder', f.id]">
+                  <sd-file-icon [folder]="true" />
+                  <span class="item-name">{{ f.name }}</span>
+                </a>
+              </td>
+              <td class="muted">—</td>
+              <td class="muted small">{{ f.updatedOn ?? f.createdOn | timeAgo }}</td>
+              <td class="muted">—</td>
+              <td class="row-actions">
+                <div class="menu-anchor">
+                  <button type="button" class="btn btn-sm" aria-label="Actions" (click)="toggleMenu($event, 'f' + f.id)">⋯</button>
+                  @if (menuFor() === 'f' + f.id) {
+                    <div
+                      class="popover-menu fixed"
+                      [style.top.px]="menuPosition().top"
+                      [style.bottom.px]="menuPosition().bottom"
+                      [style.right.px]="menuPosition().right"
+                    >
+                      <a [routerLink]="['/documents/folder', f.id]">Ouvrir</a>
+                      <button type="button" (click)="dialog.set({ kind: 'permissions', folderId: f.id, folderName: f.name })">Droits d'accès</button>
+                      @if (hasLevel(f.myLevel, 'Manage')) {
+                        <button type="button" (click)="renameFolder(f)">Renommer</button>
+                        <button type="button" (click)="dialog.set({ kind: 'move-folder', folder: f })">Déplacer</button>
+                        <hr />
+                        <button type="button" class="danger" (click)="deleteFolder(f)">Supprimer</button>
+                      }
+                    </div>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+          @for (d of documents(); track d.id) {
+            <tr (dblclick)="open(d)">
+              <td>
+                <a class="item" [routerLink]="['/documents/file', d.id]">
+                  <sd-file-icon [name]="d.name" />
+                  <span class="item-name">
+                    {{ d.name }}
+                    @if (d.checkedOutBy) {
+                      <span class="badge badge-warning lock" [attr.data-tooltip]="lockTooltip(d)" [attr.aria-label]="lockTooltip(d)">🔒</span>
+                    }
+                    @if (d.description) {
+                      <small class="muted description">{{ d.description }}</small>
+                    }
+                  </span>
+                </a>
+              </td>
+              <td><span class="badge badge-muted">v{{ d.version }}</span></td>
+              <td class="muted small">
+                {{ d.updatedOn | timeAgo }}<br />
+                {{ d.updatedBy.firstname }} {{ d.updatedBy.lastname }}
+              </td>
+              <td class="muted small nowrap">{{ d.size | fileSize }}</td>
+              <td class="row-actions">
+                <div class="menu-anchor">
+                  <button type="button" class="btn btn-sm" aria-label="Actions" (click)="toggleMenu($event, 'd' + d.id)">⋯</button>
+                  @if (menuFor() === 'd' + d.id) {
+                    <div
+                      class="popover-menu fixed"
+                      [style.top.px]="menuPosition().top"
+                      [style.bottom.px]="menuPosition().bottom"
+                      [style.right.px]="menuPosition().right"
+                    >
+                      <button type="button" (click)="open(d)">Ouvrir</button>
+                      <button type="button" (click)="download(d)">Télécharger</button>
+                      @if (hasLevel(c.myLevel, 'Write') && !isLockedByOther(d)) {
+                        <button type="button" (click)="renameDocument(d)">Renommer</button>
+                      }
+                      @if (hasLevel(c.myLevel, 'Manage')) {
+                        @if (!isLockedByOther(d)) {
+                          <button type="button" (click)="dialog.set({ kind: 'move-document', document: d })">Déplacer</button>
+                        }
+                        @if (!d.checkedOutBy) {
+                          <hr />
+                          <button type="button" class="danger" (click)="deleteDocument(d)">Supprimer</button>
+                        }
+                      }
+                    </div>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+          @if (!folders().length && !documents().length) {
+            <tr>
+              <td colspan="5" class="empty">
+                @if (filter()) {
+                  Aucun élément ne correspond au filtre.
+                } @else if (c.folder) {
+                  Ce dossier est vide.
+                } @else if (c.canCreateFolder) {
+                  Aucun dossier. Créez un premier dossier pour commencer.
+                } @else {
+                  Aucun dossier n'est partagé avec vous pour le moment.
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+} @else if (loading()) {
+  <p class="muted">Chargement…</p>
+}
+
+@if (dialog(); as d) {
+  @if (d.kind === 'name') {
+    <sd-modal [title]="d.title" (closed)="dialog.set(null)">
+      <form [formGroup]="nameForm" (ngSubmit)="submitName()">
+        @if (actionError()) {
+          <div class="alert alert-error">{{ actionError() }}</div>
+        }
+        <div class="form-field">
+          <label for="itemName">Nom</label>
+          <input id="itemName" type="text" formControlName="name" autocomplete="off" />
+        </div>
+        <div class="actions">
+          <button type="button" class="btn" (click)="dialog.set(null)">Annuler</button>
+          <button type="submit" class="btn btn-primary" [disabled]="saving()">{{ d.submitLabel }}</button>
+        </div>
+      </form>
+    </sd-modal>
+  } @else if (d.kind === 'move-folder') {
+    <sd-folder-picker
+      [title]="'Déplacer « ' + d.folder.name + ' »'"
+      requiredLevel="Manage"
+      [allowRoot]="auth.isAdmin()"
+      [hiddenFolderId]="d.folder.id"
+      [startFolderId]="currentId()"
+      (picked)="moveTo($event)"
+      (closed)="dialog.set(null)"
+    />
+  } @else if (d.kind === 'move-document') {
+    <sd-folder-picker
+      [title]="'Déplacer « ' + d.document.name + ' »'"
+      requiredLevel="Write"
+      [startFolderId]="currentId()"
+      (picked)="moveTo($event)"
+      (closed)="dialog.set(null)"
+    />
+  } @else if (d.kind === 'permissions') {
+    <sd-permissions-dialog [folderId]="d.folderId" [folderName]="d.folderName" (saved)="load()" (closed)="dialog.set(null)" />
+  } @else if (d.kind === 'activity') {
+    @if (content()?.folder; as folder) {
+      <sd-modal [title]="'Activité — ' + folder.name" [wide]="true" (closed)="dialog.set(null)">
+        <sd-activity-list [folderId]="folder.id" />
+      </sd-modal>
+    }
+  }
+}

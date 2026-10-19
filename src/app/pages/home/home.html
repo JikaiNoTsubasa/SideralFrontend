@@ -43,6 +43,12 @@
       <h3>Bonjour {{ auth.currentUser()?.firstname }}</h3>
       <p class="muted">Bienvenue sur Sideral.</p>
     </div>
+    <div class="card feature">
+      <span class="icon">📁</span>
+      <h3>Documents</h3>
+      <p class="muted">Centralisez et versionnez vos documents.</p>
+      <a routerLink="/documents" class="btn btn-sm">Ouvrir les documents</a>
+    </div>
     @for (feature of upcoming; track feature.title) {
       <div class="card feature">
         <span class="icon">{{ feature.icon }}</span>

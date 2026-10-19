@@ -1,0 +1,90 @@
+<sd-modal [title]="'Droits d\'accès — ' + folderName()" [wide]="true" (closed)="closed.emit()">
+  @if (error()) {
+    <div class="alert alert-error">{{ error() }}</div>
+  }
+
+  @if (permissions(); as p) {
+    <p class="muted small legend">
+      @for (level of levels; track level.key) {
+        <span><strong>{{ level.label }}</strong> : {{ level.description }}.</span>
+      }
+    </p>
+
+    @if (!p.isRoot) {
+      <label class="checkbox inherit">
+        <input type="checkbox" [checked]="inherit()" [disabled]="!p.canManage" (change)="setInherit($any($event.target).checked)" />
+        Hériter des droits du dossier parent
+      </label>
+
+      @if (inherit() && p.inherited.length) {
+        <h3>Droits hérités</h3>
+        <ul class="entries">
+          @for (e of p.inherited; track e.principal.type + e.principal.id + e.from.id) {
+            <li>
+              <ng-container *ngTemplateOutlet="principalTpl; context: { $implicit: e.principal }" />
+              <span class="muted small">depuis « {{ e.from.name }} »</span>
+              <span class="badge badge-muted">{{ levelLabel(e.level) }}</span>
+            </li>
+          }
+        </ul>
+      }
+    }
+
+    <h3>Droits du dossier</h3>
+    <ul class="entries">
+      @for (e of entries(); track key(e.principal)) {
+        <li>
+          <ng-container *ngTemplateOutlet="principalTpl; context: { $implicit: e.principal }" />
+          @if (p.canManage) {
+            <select [ngModel]="e.level" (ngModelChange)="setLevel(e, $event)" [attr.aria-label]="'Niveau de ' + e.principal.name">
+              @for (level of levels; track level.key) {
+                <option [value]="level.key">{{ level.label }}</option>
+              }
+            </select>
+            <button type="button" class="btn btn-sm btn-danger" (click)="remove(e)" [attr.aria-label]="'Retirer ' + e.principal.name">×</button>
+          } @else {
+            <span class="badge">{{ levelLabel(e.level) }}</span>
+          }
+        </li>
+      } @empty {
+        <li class="muted">Aucun droit propre à ce dossier.</li>
+      }
+    </ul>
+
+    @if (p.canManage) {
+      <sd-principal-picker [exclude]="selectedKeys()" (selected)="add($event)" />
+
+      @if (success()) {
+        <div class="alert alert-success saved" role="status">✓ Droits enregistrés.</div>
+      }
+
+      <div class="actions footer">
+        @if (dirty()) {
+          <span class="muted small pending">Modifications non enregistrées</span>
+        }
+        <button type="button" class="btn" (click)="closed.emit()">Fermer</button>
+        <button type="button" class="btn btn-primary" [disabled]="saving() || !dirty()" (click)="save()">
+          {{ saving() ? 'Enregistrement…' : 'Enregistrer' }}
+        </button>
+      </div>
+    }
+  } @else if (!error()) {
+    <p class="muted">Chargement…</p>
+  }
+</sd-modal>
+
+<ng-template #principalTpl let-principal>
+  <span class="principal">
+    @if (principal.type === 'user') {
+      <sd-avatar class="avatar" [firstname]="principal.firstname ?? ''" [lastname]="principal.lastname ?? ''" [avatar]="principal.avatar" />
+    } @else {
+      <span class="group-icon" aria-hidden="true">👥</span>
+    }
+    <span class="name">
+      <strong>{{ principal.name }}</strong>
+      @if (principal.detail) {
+        <small class="muted">{{ principal.detail }}</small>
+      }
+    </span>
+  </span>
+</ng-template>

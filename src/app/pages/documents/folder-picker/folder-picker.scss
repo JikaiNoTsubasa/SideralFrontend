@@ -1,0 +1,49 @@
+.location {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.folders {
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0.25rem;
+  height: 280px;
+  overflow-y: auto;
+  border: 1px solid var(--sd-border);
+  border-radius: 8px;
+
+  button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.45rem 0.5rem;
+    border: none;
+    border-radius: 6px;
+    background: none;
+    color: var(--sd-text);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--sd-bg);
+    }
+  }
+
+  sd-file-icon {
+    --sd-icon-size: 22px;
+  }
+
+  .empty {
+    padding: 1rem;
+    text-align: center;
+  }
+}
+
+.hint {
+  text-align: right;
+  margin: 0.5rem 0 0;
+}

@@ -1,0 +1,60 @@
+<div class="page-header">
+  <h1>Groupes</h1>
+  <a routerLink="new" class="btn btn-primary">+ Nouveau groupe</a>
+</div>
+
+<div class="card">
+  <input
+    type="search"
+    class="search"
+    placeholder="Rechercher un groupe…"
+    [(ngModel)]="search"
+    (ngModelChange)="onSearch($event)"
+  />
+
+  @if (error()) {
+    <div class="alert alert-error">{{ error() }}</div>
+  }
+
+  <div class="table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Description</th>
+          <th>Membres</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (group of result()?.items; track group.id) {
+          <tr>
+            <td><strong>{{ group.name }}</strong></td>
+            <td class="muted">{{ group.description || '—' }}</td>
+            <td><span class="badge badge-muted">{{ group.memberCount }}</span></td>
+            <td>
+              <div class="actions">
+                <a [routerLink]="[group.id]" class="btn btn-sm">Modifier</a>
+                <button type="button" class="btn btn-sm btn-danger" (click)="remove(group)">Supprimer</button>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="4" class="empty">{{ loading() ? 'Chargement…' : 'Aucun groupe.' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (result(); as res) {
+    @if (res.pageCount > 1) {
+      <div class="actions pager">
+        <button type="button" class="btn btn-sm" [disabled]="page() <= 1" (click)="goTo(page() - 1)">Précédent</button>
+        <span>Page {{ page() }} / {{ res.pageCount }}</span>
+        <button type="button" class="btn btn-sm" [disabled]="page() >= res.pageCount" (click)="goTo(page() + 1)">Suivant</button>
+      </div>
+    }
+  }
+</div>

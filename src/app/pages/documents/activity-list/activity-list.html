@@ -1,0 +1,38 @@
+@if (error()) {
+  <div class="alert alert-error">{{ error() }}</div>
+}
+
+<ul class="activity">
+  @for (item of items(); track item.id) {
+    <li>
+      <sd-avatar class="avatar" [firstname]="item.user.firstname" [lastname]="item.user.lastname" [avatar]="item.user.avatar" />
+      <div class="text">
+        <div>
+          <strong>{{ item.user.firstname }} {{ item.user.lastname }}</strong>
+          {{ labels[item.action] }}
+          @if (isFolderAction(item)) {
+            @if (item.folderId !== folderId()) {
+              <a [routerLink]="['/documents/folder', item.folderId]">{{ item.folderName }}</a>
+            }
+          } @else if (documentId() === null) {
+            <a [routerLink]="['/documents/file', item.documentId]">{{ item.documentName }}</a>
+          }
+        </div>
+        @if (item.details) {
+          <div class="muted small">{{ item.details }}</div>
+        }
+        <div class="muted small">{{ item.createdOn | timeAgo }}</div>
+      </div>
+    </li>
+  } @empty {
+    @if (!loading()) {
+      <li class="muted empty">Aucune activité.</li>
+    }
+  }
+</ul>
+
+@if (loading()) {
+  <p class="muted small">Chargement…</p>
+} @else if (hasMore()) {
+  <button type="button" class="btn btn-sm" (click)="loadMore()">Voir plus</button>
+}

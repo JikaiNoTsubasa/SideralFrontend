@@ -1,0 +1,48 @@
+<div class="page-header">
+  <h1>{{ isEdit() ? 'Modifier le groupe' : 'Nouveau groupe' }}</h1>
+</div>
+
+<form class="card" [formGroup]="form" (ngSubmit)="submit()">
+  @if (error()) {
+    <div class="alert alert-error">{{ error() }}</div>
+  }
+
+  <div class="form-field">
+    <label for="name">Nom</label>
+    <input id="name" type="text" formControlName="name" />
+    @if (form.controls.name.touched && form.controls.name.invalid) {
+      <span class="hint-error">Le nom est obligatoire.</span>
+    }
+  </div>
+
+  <div class="form-field">
+    <label for="description">Description</label>
+    <textarea id="description" rows="2" formControlName="description"></textarea>
+  </div>
+
+  <div class="form-field">
+    <label>Membres ({{ members().length }})</label>
+    <sd-principal-picker [groups]="false" placeholder="Ajouter un utilisateur…" [exclude]="memberKeys()" (selected)="addMember($event)" />
+    <ul class="members">
+      @for (m of members(); track m.id) {
+        <li>
+          <sd-avatar class="avatar" [firstname]="m.firstname ?? ''" [lastname]="m.lastname ?? ''" [avatar]="m.avatar" />
+          <span class="name">
+            <strong>{{ m.name }}</strong>
+            @if (m.detail) {
+              <small class="muted">{{ m.detail }}</small>
+            }
+          </span>
+          <button type="button" class="btn btn-sm btn-danger" (click)="removeMember(m)" [attr.aria-label]="'Retirer ' + m.name">×</button>
+        </li>
+      } @empty {
+        <li class="muted">Aucun membre.</li>
+      }
+    </ul>
+  </div>
+
+  <div class="actions">
+    <a routerLink="/admin/groups" class="btn">Annuler</a>
+    <button type="submit" class="btn btn-primary" [disabled]="saving()">Enregistrer</button>
+  </div>
+</form>

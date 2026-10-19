@@ -1,0 +1,44 @@
+@if (error()) {
+  <div class="alert alert-error">{{ error() }}</div>
+}
+
+@switch (kind()) {
+  @case ('pdf') {
+    @if (frameUrl(); as src) {
+      <iframe class="frame" [src]="src" [title]="documentName()"></iframe>
+    }
+  }
+  @case ('image') {
+    @if (url(); as src) {
+      <div class="media"><img [src]="src" [alt]="documentName()" /></div>
+    }
+  }
+  @case ('video') {
+    @if (url(); as src) {
+      <div class="media"><video [src]="src" controls preload="metadata"></video></div>
+    }
+  }
+  @case ('audio') {
+    @if (url(); as src) {
+      <div class="media audio"><audio [src]="src" controls preload="metadata"></audio></div>
+    }
+  }
+  @case ('text') {
+    @if (tooLarge()) {
+      <ng-container *ngTemplateOutlet="unavailable; context: { $implicit: 'Fichier texte trop volumineux pour l\'aperçu.' }" />
+    } @else if (text() !== null) {
+      <pre class="text">{{ text() }}</pre>
+    }
+  }
+  @default {
+    <ng-container *ngTemplateOutlet="unavailable; context: { $implicit: 'Aperçu non disponible pour ce type de fichier.' }" />
+  }
+}
+
+<ng-template #unavailable let-message>
+  <div class="unavailable">
+    <sd-file-icon class="big-icon" [name]="documentName()" />
+    <p class="muted">{{ message }}</p>
+    <button type="button" class="btn" (click)="download()">Télécharger</button>
+  </div>
+</ng-template>

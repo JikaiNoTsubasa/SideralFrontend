@@ -1,0 +1,58 @@
+<div class="page-header">
+  <h1>Corbeille</h1>
+  @if (items().length) {
+    <button type="button" class="btn btn-danger" [disabled]="busy()" (click)="empty()">Vider la corbeille</button>
+  }
+</div>
+
+<p class="muted">
+  Les éléments supprimés restent ici jusqu'à leur suppression définitive. Ils sont visibles par les gestionnaires des dossiers concernés.
+</p>
+
+@if (error()) {
+  <div class="alert alert-error">{{ error() }}</div>
+}
+
+<div class="card">
+  <div class="table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Emplacement d'origine</th>
+          <th>Supprimé</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of items(); track item.type + item.id) {
+          <tr>
+            <td>
+              <span class="item-label">
+                <sd-file-icon [folder]="item.type === 'folder'" [name]="item.name" />
+                <strong>{{ item.name }}</strong>
+              </span>
+            </td>
+            <td class="muted">{{ item.location }}</td>
+            <td class="muted small">
+              {{ item.deletedOn | date: 'dd/MM/yyyy HH:mm' }}
+              @if (item.deletedBy; as by) {
+                <br />par {{ by.firstname }} {{ by.lastname }}
+              }
+            </td>
+            <td>
+              <div class="actions">
+                <button type="button" class="btn btn-sm" [disabled]="busy()" (click)="restore(item)">Restaurer</button>
+                <button type="button" class="btn btn-sm btn-danger" [disabled]="busy()" (click)="purge(item)">Supprimer</button>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="4" class="empty">{{ loading() ? 'Chargement…' : 'La corbeille est vide.' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -21,7 +21,10 @@
   <div class="form-row">
     <div class="form-field">
       <label for="login">Identifiant</label>
-      <input id="login" type="text" formControlName="login" autocomplete="off" />
+      <input id="login" type="text" formControlName="login" readonly [placeholder]="isEdit() ? '' : 'Saisissez le prénom et le nom'" />
+      @if (!isEdit()) {
+        <span class="muted small">Généré automatiquement : 1re lettre du prénom + 2 premières lettres du nom.</span>
+      }
     </div>
     <div class="form-field">
       <label for="email">Email</label>

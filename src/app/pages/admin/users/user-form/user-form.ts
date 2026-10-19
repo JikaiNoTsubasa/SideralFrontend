@@ -1,6 +1,8 @@
-import { Component, computed, inject, input, OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, input, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { catchError, debounceTime, distinctUntilChanged, map, merge, of, switchMap } from 'rxjs';
 import { RoleDto } from '../../../../core/models/user.model';
 import { UserService } from '../../../../core/services/user.service';
 import { errorMessage } from '../../../../core/utils/error-message';
@@ -14,6 +16,7 @@ import { PASSWORD_MIN_LENGTH } from '../../../../core/utils/validators';
 export class UserForm implements OnInit {
   private readonly users = inject(UserService);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   /** Paramètre de route `:id` (absent en création). */
   readonly id = input<string>();
@@ -21,7 +24,8 @@ export class UserForm implements OnInit {
   protected readonly passwordMinLength = PASSWORD_MIN_LENGTH;
 
   protected readonly form = inject(NonNullableFormBuilder).group({
-    login: ['', Validators.required],
+    /** Généré par l'API (lecture seule) : affiché pour information. */
+    login: [{ value: '', disabled: true }],
     email: ['', [Validators.required, Validators.email]],
     firstname: ['', Validators.required],
     lastname: ['', Validators.required],
@@ -40,7 +44,6 @@ export class UserForm implements OnInit {
 
     const id = this.id();
     if (id) {
-      this.form.controls.login.disable();
       this.form.controls.password.disable();
       this.users.get(Number(id)).subscribe({
         next: (user) => {
@@ -51,7 +54,24 @@ export class UserForm implements OnInit {
       });
     } else {
       this.selectedRoles.set(new Set(['USER']));
+      this.watchLoginSuggestion();
     }
+  }
+
+  /** Aperçu de l'identifiant automatique pendant la saisie du prénom et du nom. */
+  private watchLoginSuggestion(): void {
+    const { firstname, lastname } = this.form.controls;
+    merge(firstname.valueChanges, lastname.valueChanges)
+      .pipe(
+        map(() => [firstname.value.trim(), lastname.value.trim()] as const),
+        debounceTime(300),
+        distinctUntilChanged((a, b) => a[0] === b[0] && a[1] === b[1]),
+        switchMap(([first, last]) =>
+          first && last ? this.users.loginSuggestion(first, last).pipe(catchError(() => of(''))) : of(''),
+        ),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((login) => this.form.controls.login.setValue(login));
   }
 
   toggleRole(key: string, checked: boolean): void {
@@ -86,7 +106,6 @@ export class UserForm implements OnInit {
           roles,
         })
       : this.users.create({
-          login: value.login,
           email: value.email,
           firstname: value.firstname,
           lastname: value.lastname,

@@ -1,0 +1,50 @@
+<div class="page-header">
+  <h1>Mes extractions</h1>
+</div>
+
+<p class="muted">Documents que vous avez extraits pour modification. Pensez à archiver la nouvelle version ou à annuler l'extraction.</p>
+
+@if (error()) {
+  <div class="alert alert-error">{{ error() }}</div>
+}
+
+<div class="card">
+  <div class="table-wrapper">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Document</th>
+          <th>Emplacement</th>
+          <th>Extrait</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of items(); track item.document.id) {
+          <tr>
+            <td>
+              <a class="item-label" [routerLink]="['/documents/file', item.document.id]">
+                <sd-file-icon [name]="item.document.name" />
+                <strong>{{ item.document.name }}</strong>
+                <span class="badge badge-muted">v{{ item.document.version }}</span>
+              </a>
+            </td>
+            <td><a class="muted" [routerLink]="['/documents/folder', item.folderId]">{{ item.location }}</a></td>
+            <td class="muted small">{{ item.document.checkedOutOn | timeAgo }}</td>
+            <td>
+              <div class="actions">
+                <button type="button" class="btn btn-sm" (click)="download(item)">Télécharger</button>
+                <a class="btn btn-sm btn-primary" [routerLink]="['/documents/file', item.document.id]">Archiver…</a>
+                <button type="button" class="btn btn-sm" (click)="cancel(item)">Annuler</button>
+              </div>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="4" class="empty">{{ loading() ? 'Chargement…' : "Vous n'avez extrait aucun document." }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

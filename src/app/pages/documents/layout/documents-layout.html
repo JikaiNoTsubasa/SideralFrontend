@@ -1,0 +1,13 @@
+<div class="layout">
+  <nav class="side">
+    <a routerLink="/documents" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+      <span aria-hidden="true">📁</span> Tous les documents
+    </a>
+    <a routerLink="/documents/checked-out" routerLinkActive="active"><span aria-hidden="true">✏️</span> Mes extractions</a>
+    <a routerLink="/documents/trash" routerLinkActive="active"><span aria-hidden="true">🗑️</span> Corbeille</a>
+  </nav>
+
+  <section class="main">
+    <router-outlet />
+  </section>
+</div>

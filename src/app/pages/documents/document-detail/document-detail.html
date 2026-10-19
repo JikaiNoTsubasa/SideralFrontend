@@ -1,0 +1,232 @@
+@if (error()) {
+  <div class="alert alert-error">{{ error() }}</div>
+  <a routerLink="/documents" class="btn">Retour aux documents</a>
+}
+
+@if (doc(); as d) {
+  <div class="page-header">
+    <ol class="breadcrumb">
+      <li><a routerLink="/documents">Documents</a></li>
+      @for (crumb of d.breadcrumb; track crumb.id) {
+        <li><a [routerLink]="['/documents/folder', crumb.id]">{{ crumb.name }}</a></li>
+      }
+    </ol>
+  </div>
+
+  <div class="title-row">
+    <sd-file-icon class="title-icon" [name]="d.name" />
+    <div class="title">
+      <h1>{{ d.name }}</h1>
+      <div class="muted small">
+        Version {{ current()?.label }} · {{ current()?.size | fileSize }} · modifié {{ d.updatedOn ?? d.createdOn | timeAgo }}
+      </div>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn" (click)="download()">Télécharger</button>
+      @if (canWrite() && !d.checkedOutBy) {
+        <button type="button" class="btn" [disabled]="busy()" (click)="openCheckin()">Nouvelle version</button>
+        <button type="button" class="btn btn-primary" [disabled]="busy()" (click)="checkout()">Extraire</button>
+      }
+      @if (checkedOutByMe()) {
+        <button type="button" class="btn" [disabled]="busy()" (click)="cancelCheckout()">Annuler l'extraction</button>
+        <button type="button" class="btn btn-primary" [disabled]="busy()" (click)="openCheckin()">Archiver</button>
+      } @else if (lockedByOther() && d.canCancelCheckout) {
+        <button type="button" class="btn btn-danger" [disabled]="busy()" (click)="cancelCheckout()">Forcer l'annulation</button>
+      }
+      @if ((canWrite() || canManage()) && !lockedByOther()) {
+        <div class="menu-anchor">
+          <button type="button" class="btn" aria-label="Plus d'actions" (click)="toggleMenu($event)">⋯</button>
+          @if (menuOpen()) {
+            <div class="popover-menu">
+              <button type="button" (click)="openEdit()">Renommer / description</button>
+              @if (canManage()) {
+                <button type="button" (click)="dialog.set('move')">Déplacer</button>
+                @if (!d.checkedOutBy) {
+                  <hr />
+                  <button type="button" class="danger" (click)="remove()">Supprimer</button>
+                }
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+
+  @if (d.checkedOutBy; as by) {
+    <div class="alert alert-warning checkout">
+      @if (checkedOutByMe()) {
+        🔒 Vous avez extrait ce document {{ d.checkedOutOn | timeAgo }}. Téléchargez-le, modifiez-le, puis
+        <strong>archivez</strong> la nouvelle version. Personne d'autre ne peut le modifier d'ici là.
+      } @else {
+        🔒 Extrait par <strong>{{ by.firstname }} {{ by.lastname }}</strong> {{ d.checkedOutOn | timeAgo }} : le document ne peut
+        pas être modifié avant son archivage ou l'annulation de l'extraction.
+      }
+    </div>
+  }
+
+  @if (actionError()) {
+    <div class="alert alert-error">{{ actionError() }}</div>
+  }
+
+  <div class="grid">
+    <section class="card preview">
+      @if (previewVersion(); as v) {
+        @if (v.id !== current()?.id) {
+          <div class="alert alert-warning preview-note">
+            Aperçu de la version {{ v.label }} (ancienne version).
+            <button type="button" class="btn btn-sm" (click)="previewVersionId.set(null)">Revenir à la version courante</button>
+          </div>
+        }
+        <sd-document-preview [documentId]="d.id" [documentName]="d.name" [version]="v" />
+      }
+    </section>
+
+    <aside class="card side">
+      <div class="tabs" role="tablist">
+        <button type="button" role="tab" [class.active]="tab() === 'versions'" (click)="tab.set('versions')">
+          Versions <span class="badge badge-muted">{{ d.versions.length }}</span>
+        </button>
+        <button type="button" role="tab" [class.active]="tab() === 'info'" (click)="tab.set('info')">Informations</button>
+        <button type="button" role="tab" [class.active]="tab() === 'activity'" (click)="tab.set('activity')">Activité</button>
+      </div>
+
+      @switch (tab()) {
+        @case ('versions') {
+          <ul class="versions">
+            @for (v of d.versions; track v.id; let first = $first) {
+              <li [class.selected]="v.id === previewVersion()?.id">
+                <div class="version-head">
+                  <span class="badge" [class.badge-muted]="!first">v{{ v.label }}</span>
+                  @if (first) {
+                    <small class="muted">courante</small>
+                  }
+                  <span class="spacer"></span>
+                  <small class="muted" [title]="v.createdOn | date: 'dd/MM/yyyy HH:mm'">{{ v.createdOn | timeAgo }}</small>
+                </div>
+                <div class="version-author">
+                  <sd-avatar class="avatar" [firstname]="v.createdBy.firstname" [lastname]="v.createdBy.lastname" [avatar]="v.createdBy.avatar" />
+                  <span class="small">{{ v.createdBy.firstname }} {{ v.createdBy.lastname }} · {{ v.size | fileSize }}</span>
+                </div>
+                @if (v.comment) {
+                  <p class="comment">{{ v.comment }}</p>
+                }
+                <div class="version-actions">
+                  <button type="button" class="btn btn-sm" (click)="previewVersionId.set(v.id)">Aperçu</button>
+                  <button type="button" class="btn btn-sm" (click)="download(v)">Télécharger</button>
+                  @if (!first && canWrite() && !lockedByOther()) {
+                    <button type="button" class="btn btn-sm" [disabled]="busy()" (click)="restore(v)">Restaurer</button>
+                  }
+                </div>
+              </li>
+            }
+          </ul>
+        }
+        @case ('info') {
+          <dl class="info">
+            <dt>Description</dt>
+            <dd>
+              @if (d.description) {
+                <span class="pre">{{ d.description }}</span>
+              } @else {
+                <span class="muted">Aucune description.</span>
+              }
+            </dd>
+            <dt>Emplacement</dt>
+            <dd>{{ location() }}</dd>
+            <dt>Créé</dt>
+            <dd>{{ d.createdOn | date: 'dd/MM/yyyy HH:mm' }} par {{ d.createdBy.firstname }} {{ d.createdBy.lastname }}</dd>
+            @if (current(); as v) {
+              <dt>Fichier d'origine</dt>
+              <dd>{{ v.originalName }}</dd>
+              <dt>Type</dt>
+              <dd>{{ v.contentType }}</dd>
+              <dt>Empreinte SHA-256</dt>
+              <dd class="hash" [title]="v.sha256">{{ v.sha256 }}</dd>
+            }
+            <dt>Votre accès</dt>
+            <dd>{{ levelLabel(d.myLevel) }}</dd>
+          </dl>
+        }
+        @case ('activity') {
+          <sd-activity-list [documentId]="d.id" />
+        }
+      }
+    </aside>
+  </div>
+
+  @switch (dialog()) {
+    @case ('checkin') {
+      <sd-modal [title]="checkedOutByMe() ? 'Archiver une nouvelle version' : 'Déposer une nouvelle version'" (closed)="dialog.set(null)">
+        <form [formGroup]="checkinForm" (ngSubmit)="submitCheckin()">
+          @if (actionError()) {
+            <div class="alert alert-error">{{ actionError() }}</div>
+          }
+          <div class="form-field">
+            <label for="checkinFile">Fichier</label>
+            <input #checkinInput id="checkinFile" type="file" (change)="onCheckinFile(checkinInput)" />
+            @if (checkinFile(); as f) {
+              <span class="muted small">{{ f.name }} · {{ f.size | fileSize }}</span>
+            }
+          </div>
+          <div class="form-field">
+            <label>Type de version</label>
+            <label class="checkbox">
+              <input type="radio" formControlName="major" [value]="false" />
+              Mineure (v{{ nextLabel(false) }}) — corrections, ajustements
+            </label>
+            <label class="checkbox">
+              <input type="radio" formControlName="major" [value]="true" />
+              Majeure (v{{ nextLabel(true) }}) — nouvelle édition, version validée
+            </label>
+          </div>
+          <div class="form-field">
+            <label for="checkinComment">Commentaire</label>
+            <textarea id="checkinComment" rows="3" formControlName="comment" [maxlength]="commentMaxLength"
+              placeholder="Qu'est-ce qui a changé ?"></textarea>
+          </div>
+          @if (uploadProgress() !== null) {
+            <progress max="100" [value]="uploadProgress()"></progress>
+          }
+          <div class="actions">
+            <button type="button" class="btn" (click)="dialog.set(null)">Annuler</button>
+            <button type="submit" class="btn btn-primary" [disabled]="busy() || !checkinFile()">Archiver</button>
+          </div>
+        </form>
+      </sd-modal>
+    }
+    @case ('edit') {
+      <sd-modal title="Modifier le document" (closed)="dialog.set(null)">
+        <form [formGroup]="editForm" (ngSubmit)="submitEdit()">
+          @if (actionError()) {
+            <div class="alert alert-error">{{ actionError() }}</div>
+          }
+          <div class="form-field">
+            <label for="docName">Nom</label>
+            <input id="docName" type="text" formControlName="name" autocomplete="off" />
+          </div>
+          <div class="form-field">
+            <label for="docDescription">Description</label>
+            <textarea id="docDescription" rows="4" formControlName="description"></textarea>
+          </div>
+          <div class="actions">
+            <button type="button" class="btn" (click)="dialog.set(null)">Annuler</button>
+            <button type="submit" class="btn btn-primary" [disabled]="busy()">Enregistrer</button>
+          </div>
+        </form>
+      </sd-modal>
+    }
+    @case ('move') {
+      <sd-folder-picker
+        [title]="'Déplacer « ' + d.name + ' »'"
+        requiredLevel="Write"
+        [startFolderId]="d.folderId"
+        (picked)="moveTo($event)"
+        (closed)="dialog.set(null)"
+      />
+    }
+  }
+} @else if (!error()) {
+  <p class="muted">Chargement…</p>
+}

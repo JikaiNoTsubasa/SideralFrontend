@@ -1,5 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { PostDto, POST_MAX_LENGTH } from '../../core/models/wall.model';
 import { AuthService } from '../../core/services/auth.service';
 import { WallService } from '../../core/services/wall.service';
@@ -11,7 +12,7 @@ const PAGE_SIZE = 10;
 
 @Component({
   selector: 'sd-home',
-  imports: [ReactiveFormsModule, Avatar, PostCard],
+  imports: [ReactiveFormsModule, RouterLink, Avatar, PostCard],
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })
@@ -36,7 +37,6 @@ export class Home implements OnInit {
 
   protected readonly upcoming = [
     { icon: '📋', title: 'Projets', description: 'Pilotez vos projets techniques et leurs tâches.' },
-    { icon: '📁', title: 'Documents', description: 'Centralisez et versionnez vos documents.' },
   ];
 
   ngOnInit(): void {

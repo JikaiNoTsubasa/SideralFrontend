@@ -36,8 +36,8 @@ export interface ChangePasswordRequest {
   newPassword: string;
 }
 
+/** L'identifiant est généré par l'API. */
 export interface CreateUserRequest {
-  login: string;
   email: string;
   firstname: string;
   lastname: string;
