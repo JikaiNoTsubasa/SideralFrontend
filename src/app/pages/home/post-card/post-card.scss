@@ -2,6 +2,41 @@
   padding: 1rem 1.25rem 0.75rem;
 }
 
+// Annonce : cadre et fond dorés
+.post.announcement {
+  border: 1px solid var(--sd-gold-border);
+  border-top: 4px solid var(--sd-gold);
+  background: linear-gradient(180deg, var(--sd-gold-soft), var(--sd-surface) 160px);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--sd-gold) 18%, transparent);
+}
+
+.announcement-label {
+  display: inline-block;
+  margin-bottom: 0.6rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  background: var(--sd-gold-strong);
+  color: var(--sd-surface);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.edit .actions {
+  align-items: center;
+}
+
+.announcement-check {
+  margin-right: auto;
+  color: var(--sd-gold-strong);
+  font-weight: 600;
+
+  input {
+    accent-color: var(--sd-gold);
+  }
+}
+
 .post-header {
   display: flex;
   align-items: center;
@@ -46,6 +81,7 @@
 }
 
 .post-content {
+  display: block;
   margin: 0 0 0.75rem;
   white-space: pre-line;
   overflow-wrap: anywhere;

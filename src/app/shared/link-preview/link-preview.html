@@ -1,0 +1,43 @@
+@if (preview(); as p) {
+  @if (p.youtubeVideoId) {
+    <div class="video">
+      @if (playing() && playerUrl()) {
+        <iframe
+          [src]="playerUrl()"
+          [title]="p.title ?? 'Vidéo YouTube'"
+          allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen
+        ></iframe>
+      } @else {
+        <button type="button" class="thumbnail" (click)="playing.set(true)" [attr.aria-label]="'Lire la vidéo ' + (p.title ?? '')">
+          <img [src]="p.imageUrl" alt="" loading="lazy" referrerpolicy="no-referrer" />
+          <span class="play" aria-hidden="true"></span>
+        </button>
+      }
+      <a class="caption" [href]="p.url" target="_blank" rel="noopener noreferrer nofollow">
+        <span class="site">▶ YouTube{{ p.description ? ' · ' + p.description : '' }}</span>
+        @if (p.title) {
+          <strong>{{ p.title }}</strong>
+        }
+      </a>
+    </div>
+  } @else {
+    <a class="card-link" [class.with-image]="p.imageUrl && !imageFailed()" [href]="p.url" target="_blank" rel="noopener noreferrer nofollow">
+      @if (p.imageUrl && !imageFailed()) {
+        <img [src]="p.imageUrl" alt="" loading="lazy" referrerpolicy="no-referrer" (error)="imageFailed.set(true)" />
+      }
+      <span class="text">
+        @if (p.siteName) {
+          <span class="site">{{ p.siteName }}</span>
+        }
+        @if (p.title) {
+          <strong>{{ p.title }}</strong>
+        }
+        @if (p.description) {
+          <span class="description">{{ p.description }}</span>
+        }
+      </span>
+    </a>
+  }
+}

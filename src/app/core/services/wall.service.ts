@@ -18,12 +18,13 @@ export class WallService {
       .pipe(map((res) => toPaged(res, page)));
   }
 
-  create(content: string): Observable<PostDto> {
-    return this.http.post<PostDto>(this.url, { content });
+  /** isAnnouncement : annonce mise en avant (administrateurs uniquement). */
+  create(content: string, isAnnouncement = false): Observable<PostDto> {
+    return this.http.post<PostDto>(this.url, { content, isAnnouncement });
   }
 
-  update(id: number, content: string): Observable<PostDto> {
-    return this.http.put<PostDto>(`${this.url}/${id}`, { content });
+  update(id: number, content: string, isAnnouncement: boolean): Observable<PostDto> {
+    return this.http.put<PostDto>(`${this.url}/${id}`, { content, isAnnouncement });
   }
 
   delete(id: number): Observable<void> {

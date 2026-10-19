@@ -1,0 +1,138 @@
+:host {
+  display: block;
+  margin: 0 0 0.75rem;
+}
+
+.site {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--sd-text-muted);
+}
+
+strong {
+  color: var(--sd-text);
+  line-height: 1.35;
+}
+
+// ---- Lien classique
+.card-link {
+  display: flex;
+  overflow: hidden;
+  border: 1px solid var(--sd-border);
+  border-radius: var(--sd-radius);
+  background: var(--sd-bg);
+  color: var(--sd-text);
+  transition: border-color 0.15s;
+
+  &:hover {
+    border-color: var(--sd-primary);
+  }
+
+  img {
+    flex-shrink: 0;
+    width: 160px;
+    min-height: 100px;
+    max-height: 140px;
+    object-fit: cover;
+    background: var(--sd-border);
+  }
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+  padding: 0.7rem 0.9rem;
+  overflow-wrap: anywhere;
+}
+
+.description {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 0.875rem;
+  color: var(--sd-text-muted);
+}
+
+// ---- YouTube
+.video {
+  overflow: hidden;
+  border: 1px solid var(--sd-border);
+  border-radius: var(--sd-radius);
+  background: var(--sd-bg);
+
+  iframe,
+  .thumbnail {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: none;
+  }
+}
+
+.thumbnail {
+  position: relative;
+  padding: 0;
+  cursor: pointer;
+  background: var(--sd-text);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &:hover .play {
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+}
+
+// Bouton lecture : cercle aux couleurs du thème + triangle
+.play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--sd-text) 75%, transparent);
+  transform: translate(-50%, -50%);
+  transition: transform 0.15s;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 54%;
+    border-style: solid;
+    border-width: 13px 0 13px 22px;
+    border-color: transparent transparent transparent var(--sd-surface);
+    transform: translate(-50%, -50%);
+  }
+}
+
+.caption {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.6rem 0.9rem;
+  overflow-wrap: anywhere;
+
+  &:hover strong {
+    color: var(--sd-primary);
+  }
+}
+
+@media (max-width: 560px) {
+  .card-link.with-image {
+    flex-direction: column;
+
+    img {
+      width: 100%;
+      max-height: 180px;
+    }
+  }
+}

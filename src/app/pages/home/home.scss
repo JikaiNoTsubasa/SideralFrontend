@@ -93,3 +93,22 @@
     font-weight: 600;
   }
 }
+
+.composer.announcement {
+  border-color: var(--sd-gold-border);
+  box-shadow: 0 0 0 3px var(--sd-gold-soft);
+}
+
+.composer .actions {
+  align-items: center;
+}
+
+.announcement-check {
+  margin-right: auto;
+  color: var(--sd-gold-strong);
+  font-weight: 600;
+
+  input {
+    accent-color: var(--sd-gold);
+  }
+}

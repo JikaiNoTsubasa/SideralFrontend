@@ -18,6 +18,8 @@ export interface PostDto {
   id: number;
   author: AuthorDto;
   content: string;
+  /** Annonce mise en avant (publiée par un administrateur). */
+  isAnnouncement: boolean;
   createdOn: string;
   updatedOn: string | null;
   likeCount: number;
@@ -35,3 +37,13 @@ export interface LikeDto {
 
 export const POST_MAX_LENGTH = 5000;
 export const COMMENT_MAX_LENGTH = 2000;
+
+/** Aperçu d'un lien ; youtubeVideoId renseigné pour une vidéo YouTube (lecteur intégré). */
+export interface LinkPreviewDto {
+  url: string;
+  title: string | null;
+  description: string | null;
+  imageUrl: string | null;
+  siteName: string | null;
+  youtubeVideoId: string | null;
+}

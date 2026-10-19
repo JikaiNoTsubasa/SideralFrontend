@@ -1,4 +1,7 @@
-<article class="card post">
+<article class="card post" [class.announcement]="state().isAnnouncement">
+  @if (state().isAnnouncement) {
+    <div class="announcement-label">📢 Annonce</div>
+  }
   <header class="post-header">
     <sd-avatar
       [firstname]="state().author.firstname"
@@ -37,6 +40,12 @@
     <form class="edit" [formGroup]="editForm" (ngSubmit)="saveEdit()">
       <textarea rows="4" formControlName="content" [maxlength]="postMaxLength"></textarea>
       <div class="actions">
+        @if (auth.isAdmin()) {
+          <label class="checkbox announcement-check">
+            <input type="checkbox" formControlName="isAnnouncement" />
+            📢 Annonce
+          </label>
+        }
         <button type="button" class="btn btn-sm" (click)="cancelEdit()">Annuler</button>
         <button type="submit" class="btn btn-sm btn-primary" [disabled]="saving() || !editForm.controls.content.value.trim()">
           Enregistrer
@@ -44,7 +53,10 @@
       </div>
     </form>
   } @else {
-    <p class="post-content">{{ state().content }}</p>
+    <sd-rich-text class="post-content" [text]="state().content" />
+    @if (previewUrl(); as url) {
+      <sd-link-preview [url]="url" />
+    }
   }
 
   @if (state().likeCount || state().commentCount) {
@@ -83,7 +95,7 @@
         <div class="comment-body">
           <div class="comment-bubble">
             <strong>{{ comment.author.firstname }} {{ comment.author.lastname }}</strong>
-            <p>{{ comment.content }}</p>
+            <p><sd-rich-text [text]="comment.content" /></p>
           </div>
           <span class="muted small">
             {{ comment.createdOn | timeAgo }}

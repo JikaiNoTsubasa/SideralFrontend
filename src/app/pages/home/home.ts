@@ -40,6 +40,8 @@ export class Home implements OnInit {
       nonNullable: true,
       validators: [Validators.required, Validators.maxLength(POST_MAX_LENGTH)],
     }),
+    /** Annonce mise en avant (case visible pour les administrateurs uniquement). */
+    isAnnouncement: new FormControl(false, { nonNullable: true }),
   });
 
   protected readonly upcoming = [
@@ -81,7 +83,7 @@ export class Home implements OnInit {
     }
     this.publishing.set(true);
     this.error.set(null);
-    this.wall.create(content).subscribe({
+    this.wall.create(content, this.auth.isAdmin() && this.composer.controls.isAnnouncement.value).subscribe({
       next: (post) => {
         this.posts.update((list) => [post, ...list]);
         this.composer.reset();

@@ -1,6 +1,6 @@
 <div class="layout">
   <section class="feed">
-    <form class="card composer" [formGroup]="composer" (ngSubmit)="publish()">
+    <form class="card composer" [class.announcement]="composer.controls.isAnnouncement.value" [formGroup]="composer" (ngSubmit)="publish()">
       <div class="composer-row">
         <sd-avatar
           [firstname]="auth.currentUser()?.firstname ?? ''"
@@ -15,7 +15,15 @@
         ></textarea>
       </div>
       <div class="actions">
-        <button type="submit" class="btn btn-primary" [disabled]="publishing() || !composer.controls.content.value.trim()">Publier</button>
+        @if (auth.isAdmin()) {
+          <label class="checkbox announcement-check" title="Le message sera mis en avant en doré sur le mur">
+            <input type="checkbox" formControlName="isAnnouncement" />
+            📢 Annonce
+          </label>
+        }
+        <button type="submit" class="btn btn-primary" [disabled]="publishing() || !composer.controls.content.value.trim()">
+          {{ composer.controls.isAnnouncement.value ? "Publier l'annonce" : 'Publier' }}
+        </button>
       </div>
     </form>
 

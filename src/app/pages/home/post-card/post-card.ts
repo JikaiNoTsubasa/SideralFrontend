@@ -5,11 +5,14 @@ import { AuthService } from '../../../core/services/auth.service';
 import { WallService } from '../../../core/services/wall.service';
 import { CommentDto, COMMENT_MAX_LENGTH, PostDto, POST_MAX_LENGTH } from '../../../core/models/wall.model';
 import { errorMessage } from '../../../core/utils/error-message';
+import { firstLink } from '../../../core/utils/linkify';
 import { Avatar } from '../../../shared/avatar/avatar';
+import { LinkPreview } from '../../../shared/link-preview/link-preview';
+import { RichText } from '../../../shared/rich-text/rich-text';
 
 @Component({
   selector: 'sd-post-card',
-  imports: [ReactiveFormsModule, Avatar, TimeAgoPipe],
+  imports: [ReactiveFormsModule, Avatar, TimeAgoPipe, RichText, LinkPreview],
   templateUrl: './post-card.html',
   styleUrl: './post-card.scss',
 })
@@ -24,6 +27,8 @@ export class PostCard {
 
   /** Copie locale du message, mise à jour par les actions (j'aime, commentaires, modification). */
   protected readonly state = linkedSignal(() => this.post());
+  /** Premier lien du message : aperçu affiché sous le texte. */
+  protected readonly previewUrl = computed(() => firstLink(this.state().content));
   protected readonly comments = linkedSignal(() => this.post().latestComments);
   protected readonly hiddenComments = computed(() => this.state().commentCount - this.comments().length);
 
@@ -41,6 +46,7 @@ export class PostCard {
       nonNullable: true,
       validators: [Validators.required, Validators.maxLength(POST_MAX_LENGTH)],
     }),
+    isAnnouncement: new FormControl(false, { nonNullable: true }),
   });
   protected readonly commentForm = new FormGroup({
     content: new FormControl('', {
@@ -124,7 +130,7 @@ export class PostCard {
   }
 
   startEdit(): void {
-    this.editForm.controls.content.setValue(this.state().content);
+    this.editForm.setValue({ content: this.state().content, isAnnouncement: this.state().isAnnouncement });
     this.editing.set(true);
   }
 
@@ -139,9 +145,11 @@ export class PostCard {
     }
     this.saving.set(true);
     this.error.set(null);
-    this.wall.update(this.state().id, content).subscribe({
+    // Seul un administrateur peut changer le statut d'annonce : les autres renvoient la valeur actuelle
+    const isAnnouncement = this.auth.isAdmin() ? this.editForm.controls.isAnnouncement.value : this.state().isAnnouncement;
+    this.wall.update(this.state().id, content, isAnnouncement).subscribe({
       next: (post) => {
-        this.state.update((p) => ({ ...p, content: post.content, updatedOn: post.updatedOn }));
+        this.state.update((p) => ({ ...p, content: post.content, isAnnouncement: post.isAnnouncement, updatedOn: post.updatedOn }));
         this.editing.set(false);
         this.saving.set(false);
       },
