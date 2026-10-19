@@ -1,0 +1,55 @@
+.query {
+  font-weight: 400;
+  overflow-wrap: anywhere;
+}
+
+.help p {
+  margin: 0 0 0.5rem;
+}
+
+.list {
+  padding: 1rem 1.25rem;
+}
+
+.count {
+  margin: 0 0 0.5rem;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  color: var(--sd-text);
+
+  &:hover strong {
+    color: var(--sd-primary);
+  }
+}
+
+.item-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.description {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 480px;
+}
+
+.location {
+  display: inline-block;
+  margin: 0.25rem 0 0 calc(28px + 0.7rem);
+  color: var(--sd-text-muted);
+
+  &:hover {
+    color: var(--sd-primary);
+  }
+}
+
+.nowrap {
+  white-space: nowrap;
+}

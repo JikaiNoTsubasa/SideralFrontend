@@ -141,6 +141,12 @@ export class FullTextSettings implements OnInit {
       });
   }
 
+  /** Bandeau « désactivée » : coche l'interrupteur et enregistre (l'URL et le code application restent obligatoires). */
+  protected enable(): void {
+    this.form.controls.enabled.setValue(true);
+    this.save();
+  }
+
   protected reindex(onlyFailed: boolean): void {
     if (!onlyFailed && !confirm('Réindexer tous les documents ? Ils seront renvoyés au serveur full text.')) {
       return;

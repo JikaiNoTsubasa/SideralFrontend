@@ -7,6 +7,23 @@
   est extrait (PDF, Word, Excel, PowerPoint, OpenDocument, texte) et envoyé au serveur.
 </p>
 
+@if (config(); as c) {
+  @if (!c.enabled) {
+    <div class="alert alert-warning disabled-banner" role="status">
+      <span>
+        <strong>⏸ L'indexation full text est désactivée.</strong>
+        @if (stats()?.pending; as pending) {
+          {{ pending }} document{{ pending > 1 ? 's' : '' }} en attente ne {{ pending > 1 ? 'seront' : 'sera' }} pas
+          envoyé{{ pending > 1 ? 's' : '' }} au serveur tant qu'elle n'est pas activée.
+        } @else {
+          Les nouveaux documents ne seront pas envoyés au serveur tant qu'elle n'est pas activée.
+        }
+      </span>
+      <button type="button" class="btn btn-sm" [disabled]="saving()" (click)="enable()">Activer maintenant</button>
+    </div>
+  }
+}
+
 <div class="card status" [class.ok]="status()?.reachable" [class.ko]="status() && !status()!.reachable">
   <div class="status-text">
     @if (checking()) {

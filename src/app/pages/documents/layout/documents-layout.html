@@ -1,8 +1,12 @@
 <div class="side-layout">
   <nav class="side-nav">
+    <form class="search" role="search" [formGroup]="searchForm" (ngSubmit)="search()">
+      <input type="search" formControlName="q" placeholder="Rechercher…" aria-label="Rechercher dans les documents" />
+    </form>
     <a routerLink="/documents" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
       <span aria-hidden="true">📁</span> Tous les documents
     </a>
+    <a routerLink="/documents/search" routerLinkActive="active"><span aria-hidden="true">🔎</span> Recherche</a>
     <a routerLink="/documents/checked-out" routerLinkActive="active"><span aria-hidden="true">✏️</span> Mes extractions</a>
     <a routerLink="/documents/trash" routerLinkActive="active"><span aria-hidden="true">🗑️</span> Corbeille</a>
   </nav>

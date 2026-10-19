@@ -49,6 +49,11 @@ export const routes: Routes = [
             loadComponent: () => import('./pages/documents/document-detail/document-detail').then((m) => m.DocumentDetail),
           },
           {
+            path: 'search',
+            title: 'Recherche - Sideral',
+            loadComponent: () => import('./pages/documents/search/search-results').then((m) => m.SearchResults),
+          },
+          {
             path: 'checked-out',
             title: 'Mes extractions - Sideral',
             loadComponent: () => import('./pages/documents/checked-out/checked-out').then((m) => m.CheckedOut),

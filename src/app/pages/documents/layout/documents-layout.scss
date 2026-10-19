@@ -1,0 +1,9 @@
+// Le style global .search (listes d'administration) a une marge et une largeur max : on l'annule ici
+.search {
+  max-width: none;
+  margin: 0 0 0.5rem;
+
+  input {
+    width: 100%;
+  }
+}

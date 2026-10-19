@@ -97,6 +97,25 @@ export interface DocumentDto {
   versions: VersionDto[];
 }
 
+/** Résultat de recherche : matchedName = nom ou description, matchedContent = contenu (full text). */
+export interface SearchResultDto {
+  document: DocumentItemDto;
+  folderId: number;
+  location: string;
+  matchedName: boolean;
+  matchedContent: boolean;
+}
+
+/** fullTextEnabled = recherche dans le contenu active ; fullTextError = elle a échoué (résultats sur le nom seulement). */
+export interface DocumentSearchDto {
+  query: string;
+  results: SearchResultDto[];
+  fullTextEnabled: boolean;
+  fullTextError: string | null;
+}
+
+export const SEARCH_MIN_LENGTH = 2;
+
 export interface CheckedOutDocumentDto {
   document: DocumentItemDto;
   folderId: number;

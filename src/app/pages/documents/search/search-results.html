@@ -1,0 +1,80 @@
+<div class="page-header">
+  <h1>
+    Recherche
+    @if (q()) {
+      <span class="muted query">« {{ q() }} »</span>
+    }
+  </h1>
+</div>
+
+@if (error()) {
+  <div class="alert alert-error">{{ error() }}</div>
+}
+
+@if (!q() || q()!.trim().length < minLength) {
+  <div class="card help">
+    <p>Saisissez au moins {{ minLength }} caractères dans le champ de recherche, à gauche.</p>
+    <p class="muted small">
+      La recherche porte sur le nom et la description des documents, et sur leur contenu quand l'indexation full text est activée.
+      Plusieurs mots : les documents contenant tous les mots (nom) ou l'un d'eux (contenu). Joker en fin de mot : <code>contr*</code>.
+    </p>
+  </div>
+} @else if (loading()) {
+  <p class="muted">Recherche…</p>
+} @else if (result(); as r) {
+  @if (r.fullTextError) {
+    <div class="alert alert-warning">{{ r.fullTextError }}</div>
+  } @else if (!r.fullTextEnabled) {
+    <div class="alert alert-warning">La recherche dans le contenu n'est pas activée : seuls les noms et descriptions ont été cherchés.</div>
+  }
+
+  <div class="card list">
+    <p class="muted small count">{{ r.results.length }} document{{ r.results.length > 1 ? 's' : '' }} trouvé{{ r.results.length > 1 ? 's' : '' }}</p>
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Document</th>
+            <th>Trouvé dans</th>
+            <th>Version</th>
+            <th>Modifié</th>
+            <th>Taille</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of r.results; track item.document.id) {
+            <tr>
+              <td>
+                <a class="item" [routerLink]="['/documents/file', item.document.id]">
+                  <sd-file-icon [name]="item.document.name" />
+                  <span class="item-text">
+                    <strong>{{ item.document.name }}</strong>
+                    @if (item.document.description) {
+                      <small class="muted description">{{ item.document.description }}</small>
+                    }
+                  </span>
+                </a>
+                <a class="location small" [routerLink]="['/documents/folder', item.folderId]">📁 {{ item.location }}</a>
+              </td>
+              <td class="nowrap">
+                @if (item.matchedContent) {
+                  <span class="badge">Contenu</span>
+                }
+                @if (item.matchedName) {
+                  <span class="badge badge-muted">Nom</span>
+                }
+              </td>
+              <td><span class="badge badge-muted">v{{ item.document.version }}</span></td>
+              <td class="muted small">{{ item.document.updatedOn | timeAgo }}</td>
+              <td class="muted small nowrap">{{ item.document.size | fileSize }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5" class="empty">Aucun document ne correspond à votre recherche.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+}

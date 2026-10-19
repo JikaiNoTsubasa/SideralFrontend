@@ -8,6 +8,7 @@ import {
   CheckedOutDocumentDto,
   ContentLinkDto,
   DocumentDto,
+  DocumentSearchDto,
   FolderContentDto,
   FolderPermissionsDto,
   FolderRefDto,
@@ -73,6 +74,11 @@ export class DmsService {
 
   document(id: number): Observable<DocumentDto> {
     return this.http.get<DocumentDto>(`${this.documents}/${id}`);
+  }
+
+  /** Recherche dans le nom, la description et le contenu des documents accessibles. */
+  search(query: string): Observable<DocumentSearchDto> {
+    return this.http.get<DocumentSearchDto>(`${this.documents}/search`, { params: new HttpParams().set('q', query) });
   }
 
   checkedOut(): Observable<CheckedOutDocumentDto[]> {
