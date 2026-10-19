@@ -61,6 +61,19 @@ export const routes: Routes = [
         ],
       },
       {
+        path: 'admin',
+        canActivate: [adminGuard],
+        loadComponent: () => import('./pages/admin/layout/admin-layout').then((m) => m.AdminLayout),
+        children: [
+          { path: '', pathMatch: 'full', redirectTo: 'fulltext' },
+          {
+            path: 'fulltext',
+            title: 'Full Text Server - Sideral',
+            loadComponent: () => import('./pages/admin/fulltext/fulltext-settings').then((m) => m.FullTextSettings),
+          },
+        ],
+      },
+      {
         path: 'admin/groups',
         canActivate: [adminGuard],
         children: [

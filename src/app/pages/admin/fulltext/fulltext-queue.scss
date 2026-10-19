@@ -1,0 +1,82 @@
+.queue-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+
+  h2 {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+}
+
+// Filtre à boutons groupés
+.segmented {
+  display: inline-flex;
+  padding: 0.2rem;
+  border: 1px solid var(--sd-border);
+  border-radius: 8px;
+  background: var(--sd-bg);
+
+  button {
+    padding: 0.3rem 0.8rem;
+    border: none;
+    border-radius: 6px;
+    background: none;
+    color: var(--sd-text-muted);
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+
+    &.active {
+      background: var(--sd-surface);
+      color: var(--sd-text);
+      box-shadow: var(--sd-shadow);
+    }
+  }
+}
+
+// Les échecs ressortent en rouge
+tr.failed {
+  td {
+    background: var(--sd-danger-soft);
+  }
+
+  .doc-name,
+  .error-cell {
+    color: var(--sd-danger);
+  }
+}
+
+.doc-name {
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.error-cell {
+  max-width: 360px;
+  overflow-wrap: anywhere;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.pager-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.75rem;
+
+  .actions {
+    align-items: center;
+  }
+}
+
+.badge {
+  white-space: nowrap;
+}

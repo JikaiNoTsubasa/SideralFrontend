@@ -1,7 +1,10 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { CheckedOutDocumentDto } from '../../core/models/dms.model';
 import { PostDto, POST_MAX_LENGTH } from '../../core/models/wall.model';
+import { TimeAgoPipe } from '../../core/pipes/time-ago.pipe';
+import { DmsService } from '../../core/services/dms.service';
 import { AuthService } from '../../core/services/auth.service';
 import { WallService } from '../../core/services/wall.service';
 import { errorMessage } from '../../core/utils/error-message';
@@ -12,15 +15,19 @@ const PAGE_SIZE = 10;
 
 @Component({
   selector: 'sd-home',
-  imports: [ReactiveFormsModule, RouterLink, Avatar, PostCard],
+  imports: [ReactiveFormsModule, RouterLink, Avatar, PostCard, TimeAgoPipe],
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })
 export class Home implements OnInit {
   private readonly wall = inject(WallService);
+  private readonly dms = inject(DmsService);
   protected readonly auth = inject(AuthService);
   protected readonly postMaxLength = POST_MAX_LENGTH;
 
+  /** Documents extraits par l'utilisateur (rappel dans la carte Documents). */
+  protected readonly checkedOut = signal<CheckedOutDocumentDto[]>([]);
+  protected readonly checkedOutPreviewCount = 3;
   protected readonly posts = signal<PostDto[]>([]);
   protected readonly page = signal(0);
   protected readonly hasMore = signal(false);
@@ -41,6 +48,8 @@ export class Home implements OnInit {
 
   ngOnInit(): void {
     this.loadMore();
+    // Rappel non bloquant : en cas d'erreur, la carte s'affiche simplement sans notification
+    this.dms.checkedOut().subscribe({ next: (items) => this.checkedOut.set(items), error: () => this.checkedOut.set([]) });
   }
 
   loadMore(): void {

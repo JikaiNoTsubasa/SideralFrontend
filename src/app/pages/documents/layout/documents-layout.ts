@@ -6,6 +6,5 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
   selector: 'sd-documents-layout',
   imports: [RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './documents-layout.html',
-  styleUrl: './documents-layout.scss',
 })
 export class DocumentsLayout {}

@@ -1,0 +1,69 @@
+<div class="queue-header">
+  <h2>Documents en cours d'indexation et en échec</h2>
+  <div class="segmented" role="group" aria-label="Filtrer">
+    @for (f of filters; track f.label) {
+      <button type="button" [class.active]="filter() === f.key" (click)="setFilter(f.key)">{{ f.label }}</button>
+    }
+  </div>
+</div>
+
+@if (error()) {
+  <div class="alert alert-error">{{ error() }}</div>
+}
+
+<div class="table-wrapper">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Document</th>
+        <th>État</th>
+        <th>Tentatives</th>
+        <th>Prochaine tentative</th>
+        <th>Erreur</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (item of result()?.items; track item.documentId) {
+        <tr [class.failed]="item.status === 'FAILED'">
+          <td>
+            <a [routerLink]="['/documents/file', item.documentId]" class="doc-name">{{ item.name }}</a>
+            <div class="muted small">📁 {{ item.folderName }} · modifié le {{ item.updatedOn | date: 'dd/MM/yyyy HH:mm' }}</div>
+          </td>
+          <td>
+            @if (item.status === 'FAILED') {
+              <span class="badge badge-danger">Échec</span>
+            } @else if (item.attempts > 0) {
+              <span class="badge badge-warning">Nouvelle tentative</span>
+            } @else {
+              <span class="badge">En attente</span>
+            }
+          </td>
+          <td>{{ item.attempts || '—' }}</td>
+          <td class="small nowrap">{{ item.nextAttemptOn ? (item.nextAttemptOn | date: 'dd/MM HH:mm:ss') : item.status === 'PENDING' ? 'Prochain passage' : '—' }}</td>
+          <td class="small error-cell">{{ item.error || '—' }}</td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="5" class="empty">
+            {{ loading() ? 'Chargement…' : filter() === 'FAILED' ? 'Aucun document en échec.' : 'Aucun document en attente : tout est indexé.' }}
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+@if (result(); as res) {
+  @if (res.total > 0) {
+    <div class="pager-row">
+      <span class="muted small">{{ res.total }} document(s) · actualisation automatique</span>
+      @if (res.pageCount > 1) {
+        <div class="actions">
+          <button type="button" class="btn btn-sm" [disabled]="page() <= 1" (click)="goTo(page() - 1)">Précédent</button>
+          <span class="small">Page {{ page() }} / {{ res.pageCount }}</span>
+          <button type="button" class="btn btn-sm" [disabled]="page() >= res.pageCount" (click)="goTo(page() + 1)">Suivant</button>
+        </div>
+      }
+    </div>
+  }
+}

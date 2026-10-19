@@ -1,0 +1,180 @@
+<div class="page-header">
+  <h1>Full Text Server</h1>
+</div>
+
+<p class="muted intro">
+  Serveur d'indexation plein texte des documents de la GED. À chaque nouveau document, nouvelle version ou renommage, le texte
+  est extrait (PDF, Word, Excel, PowerPoint, OpenDocument, texte) et envoyé au serveur.
+</p>
+
+<div class="card status" [class.ok]="status()?.reachable" [class.ko]="status() && !status()!.reachable">
+  <div class="status-text">
+    @if (checking()) {
+      <strong>Vérification du serveur…</strong>
+    } @else if (status(); as s) {
+      <strong>{{ s.reachable ? '✓' : '✗' }} {{ s.message }}</strong>
+      <span class="muted small">
+        @if (s.statusCode) {
+          HTTP {{ s.statusCode }} ·
+        }
+        @if (s.latencyMs !== null) {
+          {{ s.latencyMs }} ms ·
+        }
+        vérifié à {{ s.checkedOn | date: 'HH:mm:ss' }}
+      </span>
+    } @else {
+      <strong class="muted">Aucune URL configurée.</strong>
+    }
+  </div>
+  <button type="button" class="btn btn-sm" [disabled]="checking() || !form.controls.url.value" (click)="check()">Tester la connexion</button>
+</div>
+
+<form class="card" [formGroup]="form" (ngSubmit)="save()">
+  @if (error()) {
+    <div class="alert alert-error">{{ error() }}</div>
+  }
+
+  <div class="form-field">
+    <label class="switch">
+      <input type="checkbox" formControlName="enabled" />
+      <span class="slider"></span>
+      Indexation full text activée
+    </label>
+    <span class="muted small">Désactivée, les documents restent en attente et seront indexés à l'activation.</span>
+  </div>
+
+  <div class="form-field">
+    <label for="ftUrl">URL du serveur</label>
+    <input id="ftUrl" type="text" formControlName="url" placeholder="https://ft.coregeek.fr" autocomplete="off" />
+    @if (form.controls.url.touched && form.controls.url.invalid) {
+      <span class="hint-error">Adresse http(s) invalide.</span>
+    }
+  </div>
+
+  <div class="form-field">
+    <label for="ftCode">Code application</label>
+    <input id="ftCode" type="text" formControlName="applicationCode" placeholder="sideral" autocomplete="off" />
+    @if (form.controls.applicationCode.touched && form.controls.applicationCode.invalid) {
+      <span class="hint-error">Lettres, chiffres, « - » et « _ » uniquement (50 caractères maximum).</span>
+    }
+    @if (codeChanged()) {
+      <div class="alert alert-warning code-warning">
+        ⚠️ Le code va changer : les documents indexés sous l'ancien code (« {{ config()?.applicationCode }} ») ne seront plus disponibles.
+        Tous les documents seront réindexés sous le nouveau code.
+      </div>
+    } @else {
+      <span class="muted small">ℹ️ Si le code change, les documents indexés sous l'ancien code ne seront plus disponibles.</span>
+    }
+  </div>
+
+  <fieldset class="schedule">
+    <legend>Planification de l'indexeur</legend>
+    <p class="muted small">
+      L'indexeur est réveillé immédiatement à chaque nouveau document, nouvelle version ou renommage. Sinon, il passe à intervalle
+      régulier et envoie les documents en attente par lots (lot plein : il enchaîne sans attendre).
+    </p>
+    <div class="form-row">
+      <div class="form-field">
+        <label for="ftInterval">Délai entre deux passages (secondes)</label>
+        <input id="ftInterval" type="number" formControlName="intervalSeconds" [min]="limits.intervalSeconds.min" [max]="limits.intervalSeconds.max" />
+        @if (form.controls.intervalSeconds.invalid) {
+          <span class="hint-error">Entre {{ limits.intervalSeconds.min }} et {{ limits.intervalSeconds.max }} secondes.</span>
+        }
+      </div>
+      <div class="form-field">
+        <label for="ftBatch">Documents par lot</label>
+        <input id="ftBatch" type="number" formControlName="batchSize" [min]="limits.batchSize.min" [max]="limits.batchSize.max" />
+        @if (form.controls.batchSize.invalid) {
+          <span class="hint-error">Entre {{ limits.batchSize.min }} et {{ limits.batchSize.max }}.</span>
+        }
+      </div>
+      <div class="form-field">
+        <label for="ftRetry">Délai max. entre deux tentatives (minutes)</label>
+        <input id="ftRetry" type="number" formControlName="maxRetryDelayMinutes" [min]="limits.maxRetryDelayMinutes.min" [max]="limits.maxRetryDelayMinutes.max" />
+        @if (form.controls.maxRetryDelayMinutes.invalid) {
+          <span class="hint-error">Entre {{ limits.maxRetryDelayMinutes.min }} et {{ limits.maxRetryDelayMinutes.max }} minutes.</span>
+        } @else {
+          <span class="muted small">Serveur injoignable : nouvel essai après 1, 2, 4… min, jusqu'à ce plafond.</span>
+        }
+      </div>
+    </div>
+  </fieldset>
+
+  @if (success()) {
+    <div class="alert alert-success" role="status">✓ Configuration enregistrée.</div>
+  }
+
+  <div class="actions footer">
+    @if (config()?.updatedOn; as updatedOn) {
+      <span class="muted small updated">
+        Modifiée le {{ updatedOn | date: 'dd/MM/yyyy HH:mm' }}{{ config()?.updatedBy ? ' par ' + config()?.updatedBy : '' }}
+      </span>
+    }
+    <button type="submit" class="btn btn-primary" [disabled]="saving()">{{ saving() ? 'Enregistrement…' : 'Enregistrer' }}</button>
+  </div>
+</form>
+
+<div class="card">
+  <div class="stats-header">
+    <h2>Indexation des documents</h2>
+    <button type="button" class="btn btn-sm" (click)="loadStats(); queueList.reload()">Actualiser</button>
+  </div>
+
+  @if (info()) {
+    <div class="alert alert-success">{{ info() }}</div>
+  }
+
+  @if (stats(); as st) {
+    <div class="stats">
+      <div class="stat">
+        <span class="value">{{ st.indexed }}</span>
+        <span class="muted small">indexé(s)</span>
+      </div>
+      <div class="stat">
+        <span class="value">{{ st.pending }}</span>
+        <span class="muted small">
+          en attente
+          @if (st.retrying) {
+            (dont {{ st.retrying }} en nouvelle tentative)
+          }
+        </span>
+      </div>
+      <div class="stat" [class.danger]="st.failed">
+        <span class="value">{{ st.failed }}</span>
+        <span class="muted small">en échec</span>
+      </div>
+    </div>
+
+    <div class="runs small">
+      @if (!config()?.enabled) {
+        <span class="muted">⏸ Indexation désactivée : les documents restent en attente.</span>
+      } @else {
+        <span>
+          <strong>Dernier passage :</strong>
+          @if (st.runs.lastRunOn) {
+            {{ st.runs.lastRunOn | date: 'dd/MM HH:mm:ss' }} — {{ st.runs.lastRunSent }} document(s) envoyé(s)
+          } @else {
+            aucun depuis le démarrage de l'API
+          }
+        </span>
+        @if (st.runs.nextRunOn) {
+          <span><strong>Prochain passage :</strong> {{ st.runs.nextRunOn | date: 'dd/MM HH:mm:ss' }}</span>
+        }
+      }
+      @if (st.runs.lastRunError) {
+        <span class="run-error"><strong>Erreur :</strong> {{ st.runs.lastRunError }}</span>
+      }
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn btn-sm" [disabled]="!st.failed && !st.retrying" (click)="reindex(true)">Relancer les échecs</button>
+      <button type="button" class="btn btn-sm" (click)="reindex(false)">Tout réindexer</button>
+    </div>
+  } @else {
+    <p class="muted">Statistiques indisponibles.</p>
+  }
+</div>
+
+<div class="card">
+  <sd-fulltext-queue #queueList />
+</div>

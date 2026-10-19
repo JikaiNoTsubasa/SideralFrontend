@@ -47,6 +47,23 @@
       <span class="icon">📁</span>
       <h3>Documents</h3>
       <p class="muted">Centralisez et versionnez vos documents.</p>
+      @if (checkedOut().length; as count) {
+        <div class="alert alert-warning checkout-notice" role="status">
+          <strong>🔒 {{ count }} document{{ count > 1 ? 's' : '' }} extrait{{ count > 1 ? 's' : '' }} par vous</strong>
+          <ul>
+            @for (item of checkedOut().slice(0, checkedOutPreviewCount); track item.document.id) {
+              <li>
+                <a [routerLink]="['/documents/file', item.document.id]">{{ item.document.name }}</a>
+                <small>{{ item.document.checkedOutOn | timeAgo }}</small>
+              </li>
+            }
+          </ul>
+          @if (count > checkedOutPreviewCount) {
+            <small>et {{ count - checkedOutPreviewCount }} autre{{ count - checkedOutPreviewCount > 1 ? 's' : '' }}…</small>
+          }
+          <a routerLink="/documents/checked-out" class="all">Voir mes extractions →</a>
+        </div>
+      }
       <a routerLink="/documents" class="btn btn-sm">Ouvrir les documents</a>
     </div>
     @for (feature of upcoming; track feature.title) {

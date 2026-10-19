@@ -66,3 +66,30 @@
     display: none;
   }
 }
+
+.checkout-notice {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+
+  ul {
+    margin: 0;
+    padding-left: 1.1rem;
+  }
+
+  li a,
+  .all {
+    color: inherit;
+    text-decoration: underline;
+    overflow-wrap: anywhere;
+  }
+
+  li small {
+    margin-left: 0.35rem;
+    opacity: 0.8;
+  }
+
+  .all {
+    font-weight: 600;
+  }
+}

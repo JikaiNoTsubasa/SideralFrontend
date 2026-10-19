@@ -117,6 +117,7 @@ input[type='text'],
 input[type='email'],
 input[type='password'],
 input[type='search'],
+input[type='number'],
 select,
 textarea {
   width: 100%;
@@ -352,6 +353,11 @@ select {
   color: var(--sd-warning);
 }
 
+.badge.badge-danger {
+  background: var(--sd-danger-soft);
+  color: var(--sd-danger);
+}
+
 // Nom d'élément avec icône (listes de la GED)
 .item-label {
   display: inline-flex;
@@ -397,5 +403,106 @@ select {
     letter-spacing: normal;
     white-space: pre-line;
     pointer-events: none;
+  }
+}
+
+// Page avec menu latéral (Documents, Admin) : <div class="side-layout"><nav class="side-nav">…</nav><section>…</section></div>
+.side-layout {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.side-nav {
+  position: sticky;
+  top: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+
+  a {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.55rem 0.75rem;
+    border-radius: 8px;
+    color: var(--sd-text-muted);
+    font-weight: 500;
+
+    &:hover {
+      background: var(--sd-surface);
+    }
+
+    &.active {
+      color: var(--sd-primary);
+      background: var(--sd-primary-soft);
+    }
+  }
+}
+
+@media (max-width: 800px) {
+  .side-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .side-nav {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
+
+// Interrupteur : <label class="switch"><input type="checkbox" /><span class="slider"></span> Libellé</label>
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  font-weight: 500;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .slider {
+    position: relative;
+    flex-shrink: 0;
+    width: 40px;
+    height: 22px;
+    border-radius: 999px;
+    background: var(--sd-border);
+    transition: background 0.15s;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--sd-surface);
+      box-shadow: var(--sd-shadow);
+      transition: transform 0.15s;
+    }
+  }
+
+  input:checked + .slider {
+    background: var(--sd-primary);
+
+    &::after {
+      transform: translateX(18px);
+    }
+  }
+
+  input:focus-visible + .slider {
+    box-shadow: 0 0 0 3px var(--sd-primary-soft);
+  }
+
+  input:disabled + .slider {
+    opacity: 0.6;
   }
 }
