@@ -66,15 +66,7 @@
 }
 
 .avatar {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: var(--sd-primary);
-  color: #fff;
-  font-size: 0.8rem;
-  font-weight: 600;
+  --sd-avatar-size: 34px;
 }
 
 .menu {
@@ -85,7 +77,7 @@
   background: var(--sd-surface);
   border: 1px solid var(--sd-border);
   border-radius: var(--sd-radius);
-  box-shadow: 0 8px 24px rgb(0 0 0 / 0.08);
+  box-shadow: var(--sd-shadow-lg);
   padding: 0.35rem;
   display: flex;
   flex-direction: column;

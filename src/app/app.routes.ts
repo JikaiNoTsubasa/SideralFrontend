@@ -25,6 +25,11 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/profile/profile').then((m) => m.Profile),
       },
       {
+        path: 'preferences',
+        title: 'Préférences - Sideral',
+        loadComponent: () => import('./pages/preferences/preferences').then((m) => m.Preferences),
+      },
+      {
         path: 'admin/users',
         canActivate: [adminGuard],
         children: [

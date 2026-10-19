@@ -1,0 +1,154 @@
+.post {
+  padding: 1rem 1.25rem 0.75rem;
+}
+
+.post-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.post-meta {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.post-tools {
+  display: flex;
+  gap: 0.75rem;
+  align-self: flex-start;
+}
+
+.small {
+  font-size: 0.8rem;
+}
+
+.link-btn {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-size: 0.8rem;
+  color: var(--sd-text-muted);
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    color: var(--sd-primary);
+    text-decoration: underline;
+  }
+
+  &.danger:hover {
+    color: var(--sd-danger);
+  }
+}
+
+.post-content {
+  margin: 0 0 0.75rem;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+
+.edit {
+  margin-bottom: 0.75rem;
+
+  textarea {
+    margin-bottom: 0.5rem;
+  }
+}
+
+.post-stats {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 0.5rem;
+}
+
+.post-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.25rem;
+  padding: 0.25rem 0;
+  border-top: 1px solid var(--sd-border);
+  border-bottom: 1px solid var(--sd-border);
+
+  button {
+    padding: 0.5rem;
+    border: none;
+    border-radius: 6px;
+    background: none;
+    font: inherit;
+    font-weight: 500;
+    color: var(--sd-text-muted);
+    cursor: pointer;
+
+    &:hover {
+      background: var(--sd-bg);
+    }
+
+    &.active {
+      color: var(--sd-primary);
+    }
+  }
+}
+
+.comments {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding-top: 0.75rem;
+
+  > .link-btn {
+    align-self: flex-start;
+    font-weight: 500;
+  }
+}
+
+.small-avatar {
+  --sd-avatar-size: 32px;
+}
+
+.comment {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.comment-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+
+  > .muted {
+    padding-left: 0.75rem;
+  }
+}
+
+.comment-bubble {
+  background: var(--sd-bg);
+  border-radius: 14px;
+  padding: 0.45rem 0.75rem;
+
+  strong {
+    font-size: 0.85rem;
+  }
+
+  p {
+    margin: 0.1rem 0 0;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+  }
+}
+
+.comment-form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  input {
+    border-radius: 999px;
+    background: var(--sd-bg);
+  }
+}

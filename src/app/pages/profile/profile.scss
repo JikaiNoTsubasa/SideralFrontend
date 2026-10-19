@@ -4,3 +4,44 @@
   gap: 1.5rem;
   align-items: start;
 }
+
+.avatar-card {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+
+  h2 {
+    margin-bottom: 0.25rem;
+  }
+
+  p {
+    margin: 0 0 1rem;
+  }
+}
+
+.avatar-preview {
+  --sd-avatar-size: 96px;
+}
+
+.avatar-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.avatar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+@media (max-width: 540px) {
+  .avatar-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .avatar-actions {
+    justify-content: center;
+  }
+}

@@ -6,6 +6,17 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <script>
+    // Applique le thème mis en cache avant le démarrage d'Angular (voir ThemeService)
+    try {
+      var t = JSON.parse(localStorage.getItem('sideral.theme') || 'null');
+      if (t) {
+        var dark = t.theme === 'dark' || (t.theme === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+        document.documentElement.dataset.accent = t.accent;
+      }
+    } catch (e) {}
+  </script>
 </head>
 <body>
   <sd-root></sd-root>

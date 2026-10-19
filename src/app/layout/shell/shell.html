@@ -12,12 +12,13 @@
     @if (auth.currentUser(); as user) {
       <div class="profile">
         <button type="button" class="profile-toggle" (click)="toggleMenu($event)">
-          <span class="avatar">{{ initials() }}</span>
+          <sd-avatar class="avatar" [firstname]="user.firstname" [lastname]="user.lastname" [avatar]="user.avatar" />
           <span class="name">{{ user.firstname }} {{ user.lastname }}</span>
         </button>
         @if (menuOpen()) {
           <div class="menu">
             <a routerLink="/profile" (click)="closeMenu()">Mon profil</a>
+            <a routerLink="/preferences" (click)="closeMenu()">Préférences</a>
             <button type="button" (click)="logout()">Déconnexion</button>
           </div>
         }

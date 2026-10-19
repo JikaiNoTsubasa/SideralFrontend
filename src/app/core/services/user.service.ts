@@ -4,6 +4,7 @@ import { map, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Paged } from '../models/api.model';
 import { CreateUserRequest, RoleDto, UpdateUserRequest, UserDto } from '../models/user.model';
+import { toPaged } from '../utils/paged';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -15,19 +16,9 @@ export class UserService {
     if (search) {
       params = params.set('search', search);
     }
-    return this.http.get<UserDto[]>(this.url, { params, observe: 'response' }).pipe(
-      map((res) => {
-        const header = (name: string, fallback: number) => Number(res.headers.get(name) ?? fallback);
-        const items = res.body ?? [];
-        return {
-          items,
-          page: header('page', page),
-          pageSize: header('page-size', items.length),
-          pageCount: header('page-count', 1),
-          total: header('total', items.length),
-        };
-      }),
-    );
+    return this.http
+      .get<UserDto[]>(this.url, { params, observe: 'response' })
+      .pipe(map((res) => toPaged(res, page)));
   }
 
   get(id: number): Observable<UserDto> {

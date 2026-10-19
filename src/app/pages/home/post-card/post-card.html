@@ -1,0 +1,117 @@
+<article class="card post">
+  <header class="post-header">
+    <sd-avatar
+      [firstname]="state().author.firstname"
+      [lastname]="state().author.lastname"
+      [avatar]="state().author.avatar"
+    />
+    <div class="post-meta">
+      <strong>{{ state().author.firstname }} {{ state().author.lastname }}</strong>
+      <span class="muted small">
+        @if (state().author.jobTitle) {
+          {{ state().author.jobTitle }} ·
+        }
+        {{ state().createdOn | timeAgo }}
+        @if (state().updatedOn) {
+          · modifié
+        }
+      </span>
+    </div>
+    @if (!editing()) {
+      <div class="post-tools">
+        @if (isMine()) {
+          <button type="button" class="link-btn" (click)="startEdit()">Modifier</button>
+        }
+        @if (canDelete()) {
+          <button type="button" class="link-btn danger" (click)="remove()">Supprimer</button>
+        }
+      </div>
+    }
+  </header>
+
+  @if (error()) {
+    <div class="alert alert-error">{{ error() }}</div>
+  }
+
+  @if (editing()) {
+    <form class="edit" [formGroup]="editForm" (ngSubmit)="saveEdit()">
+      <textarea rows="4" formControlName="content" [maxlength]="postMaxLength"></textarea>
+      <div class="actions">
+        <button type="button" class="btn btn-sm" (click)="cancelEdit()">Annuler</button>
+        <button type="submit" class="btn btn-sm btn-primary" [disabled]="saving() || !editForm.controls.content.value.trim()">
+          Enregistrer
+        </button>
+      </div>
+    </form>
+  } @else {
+    <p class="post-content">{{ state().content }}</p>
+  }
+
+  @if (state().likeCount || state().commentCount) {
+    <div class="post-stats muted small">
+      <span>
+        @if (state().likeCount) {
+          👍 {{ state().likeCount }}
+        }
+      </span>
+      @if (state().commentCount) {
+        <span>{{ state().commentCount }} commentaire{{ state().commentCount > 1 ? 's' : '' }}</span>
+      }
+    </div>
+  }
+
+  <div class="post-actions">
+    <button type="button" [class.active]="state().likedByMe" (click)="toggleLike()">👍 J'aime</button>
+    <button type="button" (click)="focusComment()">💬 Commenter</button>
+  </div>
+
+  <div class="comments">
+    @if (hiddenComments() > 0) {
+      <button type="button" class="link-btn" [disabled]="loadingComments()" (click)="loadAllComments()">
+        Voir {{ hiddenComments() > 1 ? 'les ' + hiddenComments() + ' commentaires précédents' : 'le commentaire précédent' }}
+      </button>
+    }
+
+    @for (comment of comments(); track comment.id) {
+      <div class="comment">
+        <sd-avatar
+          class="small-avatar"
+          [firstname]="comment.author.firstname"
+          [lastname]="comment.author.lastname"
+          [avatar]="comment.author.avatar"
+        />
+        <div class="comment-body">
+          <div class="comment-bubble">
+            <strong>{{ comment.author.firstname }} {{ comment.author.lastname }}</strong>
+            <p>{{ comment.content }}</p>
+          </div>
+          <span class="muted small">
+            {{ comment.createdOn | timeAgo }}
+            @if (canDeleteComment(comment)) {
+              · <button type="button" class="link-btn danger" (click)="deleteComment(comment)">Supprimer</button>
+            }
+          </span>
+        </div>
+      </div>
+    }
+
+    <form class="comment-form" [formGroup]="commentForm" (ngSubmit)="sendComment()">
+      <sd-avatar
+        class="small-avatar"
+        [firstname]="auth.currentUser()?.firstname ?? ''"
+        [lastname]="auth.currentUser()?.lastname ?? ''"
+        [avatar]="auth.currentUser()?.avatar"
+      />
+      <input
+        #commentInput
+        type="text"
+        placeholder="Écrire un commentaire…"
+        formControlName="content"
+        [maxlength]="commentMaxLength"
+      />
+      <button type="submit" class="btn btn-sm btn-primary" [disabled]="sendingComment() || !commentForm.controls.content.value.trim()">
+        Envoyer
+      </button>
+    </form>
+  </div>
+</article>

@@ -1,0 +1,72 @@
+// Thèmes : <html data-theme="light|dark" data-accent="indigo|blue|..."> (posés par ThemeService).
+// Chaque couleur d'accent fournit 4 nuances ; le thème choisit lesquelles utiliser comme --sd-primary.
+// Les sélecteurs [data-accent] ne sont pas limités à :root pour pouvoir afficher les pastilles de la palette.
+
+$accents: (
+  indigo: (600: #4f46e5, 700: #4338ca, 400: #818cf8, 300: #a5b4fc),
+  blue: (600: #2563eb, 700: #1d4ed8, 400: #60a5fa, 300: #93c5fd),
+  teal: (600: #0d9488, 700: #0f766e, 400: #2dd4bf, 300: #5eead4),
+  green: (600: #16a34a, 700: #15803d, 400: #4ade80, 300: #86efac),
+  orange: (600: #ea580c, 700: #c2410c, 400: #fb923c, 300: #fdba74),
+  rose: (600: #e11d48, 700: #be123c, 400: #fb7185, 300: #fda4af),
+  violet: (600: #7c3aed, 700: #6d28d9, 400: #a78bfa, 300: #c4b5fd),
+);
+
+$default-accent: indigo;
+
+@each $name, $shades in $accents {
+  $selector: "[data-accent='#{$name}']";
+  @if $name == $default-accent {
+    $selector: ':root, #{$selector}';
+  }
+
+  #{$selector} {
+    @each $shade, $color in $shades {
+      --sd-accent-#{$shade}: #{$color};
+    }
+  }
+}
+
+// ---- Clair (défaut)
+:root {
+  color-scheme: light;
+  --sd-primary: var(--sd-accent-600);
+  --sd-primary-hover: var(--sd-accent-700);
+  --sd-on-primary: #ffffff;
+  --sd-primary-soft: color-mix(in srgb, var(--sd-primary) 10%, var(--sd-surface));
+  --sd-danger: #dc2626;
+  --sd-danger-soft: #fef2f2;
+  --sd-warning: #b45309;
+  --sd-warning-soft: #fffbeb;
+  --sd-success: #16a34a;
+  --sd-success-soft: #f0fdf4;
+  --sd-bg: #f5f6fa;
+  --sd-surface: #ffffff;
+  --sd-border: #e5e7eb;
+  --sd-text: #1f2937;
+  --sd-text-muted: #6b7280;
+  --sd-shadow: 0 1px 3px rgb(0 0 0 / 0.06), 0 1px 2px rgb(0 0 0 / 0.04);
+  --sd-shadow-lg: 0 8px 24px rgb(0 0 0 / 0.08);
+}
+
+// ---- Sombre : nuances claires de l'accent (lisibles sur fond sombre) et texte foncé sur les boutons
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --sd-primary: var(--sd-accent-400);
+  --sd-primary-hover: var(--sd-accent-300);
+  --sd-on-primary: #0f1115;
+  --sd-primary-soft: color-mix(in srgb, var(--sd-primary) 16%, var(--sd-surface));
+  --sd-danger: #f87171;
+  --sd-danger-soft: color-mix(in srgb, #f87171 14%, var(--sd-surface));
+  --sd-warning: #fbbf24;
+  --sd-warning-soft: color-mix(in srgb, #fbbf24 14%, var(--sd-surface));
+  --sd-success: #4ade80;
+  --sd-success-soft: color-mix(in srgb, #4ade80 14%, var(--sd-surface));
+  --sd-bg: #0f1115;
+  --sd-surface: #181b21;
+  --sd-border: #2a2f38;
+  --sd-text: #e5e7eb;
+  --sd-text-muted: #9ca3af;
+  --sd-shadow: 0 1px 3px rgb(0 0 0 / 0.4);
+  --sd-shadow-lg: 0 8px 24px rgb(0 0 0 / 0.5);
+}

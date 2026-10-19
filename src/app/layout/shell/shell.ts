@@ -1,10 +1,11 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { Avatar } from '../../shared/avatar/avatar';
 
 @Component({
   selector: 'sd-shell',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, Avatar],
   templateUrl: './shell.html',
   styleUrl: './shell.scss',
   host: { '(document:click)': 'closeMenu()' },
@@ -12,10 +13,6 @@ import { AuthService } from '../../core/services/auth.service';
 export class Shell {
   protected readonly auth = inject(AuthService);
   protected readonly menuOpen = signal(false);
-  protected readonly initials = computed(() => {
-    const user = this.auth.currentUser();
-    return user ? `${user.firstname.charAt(0)}${user.lastname.charAt(0)}`.toUpperCase() : '';
-  });
 
   toggleMenu(event: Event): void {
     event.stopPropagation();

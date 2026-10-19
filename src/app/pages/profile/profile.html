@@ -6,6 +6,35 @@
   <div class="alert alert-warning">Vous devez modifier votre mot de passe avant de continuer.</div>
 }
 
+<section class="card avatar-card">
+  <sd-avatar
+    class="avatar-preview"
+    [firstname]="auth.currentUser()?.firstname ?? ''"
+    [lastname]="auth.currentUser()?.lastname ?? ''"
+    [avatar]="auth.currentUser()?.avatar"
+  />
+  <div class="avatar-info">
+    <h2>Photo de profil</h2>
+    <p class="muted">JPEG, PNG ou WebP. L'image est recadrée en carré au centre.</p>
+
+    @if (avatarMessage(); as msg) {
+      <div class="alert" [class.alert-success]="msg.type === 'success'" [class.alert-error]="msg.type === 'error'">
+        {{ msg.text }}
+      </div>
+    }
+
+    <div class="avatar-actions">
+      <input #fileInput type="file" accept="image/jpeg,image/png,image/webp" hidden (change)="onAvatarSelected(fileInput)" />
+      <button type="button" class="btn btn-primary" [disabled]="savingAvatar()" (click)="fileInput.click()">
+        {{ auth.currentUser()?.avatar ? 'Changer la photo' : 'Ajouter une photo' }}
+      </button>
+      @if (auth.currentUser()?.avatar) {
+        <button type="button" class="btn btn-danger" [disabled]="savingAvatar()" (click)="removeAvatar()">Supprimer</button>
+      }
+    </div>
+  </div>
+</section>
+
 <div class="grid">
   <form class="card" [formGroup]="infoForm" (ngSubmit)="saveInfo()">
     <h2>Informations</h2>

@@ -1,13 +1,55 @@
-<h1>Bonjour {{ auth.currentUser()?.firstname }}</h1>
-<p class="muted">Bienvenue sur Sideral.</p>
+<div class="layout">
+  <section class="feed">
+    <form class="card composer" [formGroup]="composer" (ngSubmit)="publish()">
+      <div class="composer-row">
+        <sd-avatar
+          [firstname]="auth.currentUser()?.firstname ?? ''"
+          [lastname]="auth.currentUser()?.lastname ?? ''"
+          [avatar]="auth.currentUser()?.avatar"
+        />
+        <textarea
+          rows="3"
+          [placeholder]="'Quoi de neuf, ' + (auth.currentUser()?.firstname ?? '') + ' ?'"
+          formControlName="content"
+          [maxlength]="postMaxLength"
+        ></textarea>
+      </div>
+      <div class="actions">
+        <button type="submit" class="btn btn-primary" [disabled]="publishing() || !composer.controls.content.value.trim()">Publier</button>
+      </div>
+    </form>
 
-<div class="features">
-  @for (feature of features; track feature.title) {
-    <div class="card feature">
-      <span class="icon">{{ feature.icon }}</span>
-      <h3>{{ feature.title }}</h3>
-      <p class="muted">{{ feature.description }}</p>
-      <span class="badge badge-muted">Bientôt disponible</span>
+    @if (error()) {
+      <div class="alert alert-error">{{ error() }}</div>
+    }
+
+    @for (post of posts(); track post.id) {
+      <sd-post-card [post]="post" (deleted)="onDeleted($event)" />
+    } @empty {
+      @if (!loading()) {
+        <div class="card empty muted">Aucun message pour le moment. Soyez le premier à publier !</div>
+      }
+    }
+
+    @if (loading()) {
+      <p class="muted center">Chargement…</p>
+    } @else if (hasMore()) {
+      <button type="button" class="btn more" (click)="loadMore()">Charger plus de messages</button>
+    }
+  </section>
+
+  <aside class="sidebar">
+    <div class="card">
+      <h3>Bonjour {{ auth.currentUser()?.firstname }}</h3>
+      <p class="muted">Bienvenue sur Sideral.</p>
     </div>
-  }
+    @for (feature of upcoming; track feature.title) {
+      <div class="card feature">
+        <span class="icon">{{ feature.icon }}</span>
+        <h3>{{ feature.title }}</h3>
+        <p class="muted">{{ feature.description }}</p>
+        <span class="badge badge-muted">Bientôt disponible</span>
+      </div>
+    }
+  </aside>
 </div>

@@ -1,0 +1,55 @@
+<div class="page-header">
+  <h1>Préférences</h1>
+  @if (saving()) {
+    <span class="muted">Enregistrement…</span>
+  }
+</div>
+
+@if (error()) {
+  <div class="alert alert-error">{{ error() }}</div>
+}
+
+<section class="card">
+  <h2>Thème</h2>
+  <p class="muted">« Système » suit le réglage clair / sombre de votre appareil.</p>
+
+  <div class="themes">
+    @for (theme of themes; track theme.key) {
+      <button
+        type="button"
+        class="theme-option"
+        [class.selected]="themeService.theme() === theme.key"
+        [attr.aria-pressed]="themeService.theme() === theme.key"
+        (click)="selectTheme(theme.key)"
+      >
+        <span class="preview" [class]="'preview-' + theme.key">
+          <span class="preview-bar"></span>
+          <span class="preview-line"></span>
+          <span class="preview-line short"></span>
+        </span>
+        <span class="label">{{ theme.label }}</span>
+      </button>
+    }
+  </div>
+</section>
+
+<section class="card">
+  <h2>Couleur principale</h2>
+  <p class="muted">Utilisée pour les boutons, les liens et les éléments actifs.</p>
+
+  <div class="accents">
+    @for (accent of accents; track accent.key) {
+      <button
+        type="button"
+        class="accent-option"
+        [class.selected]="themeService.accent() === accent.key"
+        [attr.aria-pressed]="themeService.accent() === accent.key"
+        [attr.title]="accent.label"
+        (click)="selectAccent(accent.key)"
+      >
+        <span class="swatch" [attr.data-accent]="accent.key"></span>
+        <span class="label">{{ accent.label }}</span>
+      </button>
+    }
+  </div>
+</section>

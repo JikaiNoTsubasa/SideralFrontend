@@ -1,19 +1,7 @@
+@use 'themes';
+
 :root {
-  --sd-primary: #4f46e5;
-  --sd-primary-hover: #4338ca;
-  --sd-primary-soft: #eef2ff;
-  --sd-danger: #dc2626;
-  --sd-danger-soft: #fef2f2;
-  --sd-warning-soft: #fffbeb;
-  --sd-warning: #b45309;
-  --sd-success: #16a34a;
-  --sd-bg: #f5f6fa;
-  --sd-surface: #ffffff;
-  --sd-border: #e5e7eb;
-  --sd-text: #1f2937;
-  --sd-text-muted: #6b7280;
   --sd-radius: 10px;
-  --sd-shadow: 0 1px 3px rgb(0 0 0 / 0.06), 0 1px 2px rgb(0 0 0 / 0.04);
   --sd-font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
 
@@ -80,7 +68,7 @@ h3 {
   &.btn-primary {
     background: var(--sd-primary);
     border-color: var(--sd-primary);
-    color: #fff;
+    color: var(--sd-on-primary);
 
     &:hover:not(:disabled) {
       background: var(--sd-primary-hover);
@@ -128,7 +116,8 @@ h3 {
 input[type='text'],
 input[type='email'],
 input[type='password'],
-input[type='search'] {
+input[type='search'],
+textarea {
   width: 100%;
   padding: 0.55rem 0.75rem;
   border: 1px solid var(--sd-border);
@@ -173,7 +162,7 @@ input[type='search'] {
   }
 
   &.alert-success {
-    background: #f0fdf4;
+    background: var(--sd-success-soft);
     color: var(--sd-success);
   }
 }
@@ -215,4 +204,10 @@ input[type='search'] {
 
 .muted {
   color: var(--sd-text-muted);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 2.5rem;
+  line-height: 1.5;
 }

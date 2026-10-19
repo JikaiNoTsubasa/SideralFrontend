@@ -1,0 +1,127 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 760px;
+}
+
+.page-header {
+  margin-bottom: 0;
+}
+
+h2 {
+  margin-bottom: 0.25rem;
+}
+
+.card > .muted {
+  margin: 0 0 1.25rem;
+}
+
+.themes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+}
+
+.theme-option,
+.accent-option {
+  border: 2px solid var(--sd-border);
+  border-radius: var(--sd-radius);
+  background: var(--sd-surface);
+  color: var(--sd-text);
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s;
+
+  &:hover {
+    border-color: var(--sd-text-muted);
+  }
+
+  &.selected {
+    border-color: var(--sd-primary);
+  }
+}
+
+.theme-option {
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  .label {
+    font-weight: 500;
+  }
+}
+
+// Mini aperçus aux couleurs fixes de chaque thème
+.preview {
+  --p-bg: #f5f6fa;
+  --p-surface: #ffffff;
+  --p-line: #e5e7eb;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  height: 80px;
+  padding: 0.5rem;
+  border-radius: 6px;
+  background: var(--p-bg);
+
+  &.preview-dark {
+    --p-bg: #0f1115;
+    --p-surface: #181b21;
+    --p-line: #2a2f38;
+  }
+
+  &.preview-system {
+    background: linear-gradient(135deg, #f5f6fa 50%, #0f1115 50%);
+  }
+}
+
+.preview-bar {
+  height: 14px;
+  border-radius: 4px;
+  background: var(--sd-primary);
+}
+
+.preview-line {
+  height: 10px;
+  border-radius: 4px;
+  background: var(--p-surface);
+  border: 1px solid var(--p-line);
+
+  &.short {
+    width: 60%;
+  }
+}
+
+.accents {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.accent-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  width: 88px;
+  padding: 0.75rem 0.5rem 0.5rem;
+
+  .label {
+    font-size: 0.85rem;
+  }
+}
+
+// La pastille montre la nuance qui sera utilisée dans le thème courant
+.swatch {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--sd-accent-600);
+}
+
+:host-context([data-theme='dark']) .swatch {
+  background: var(--sd-accent-400);
+}
